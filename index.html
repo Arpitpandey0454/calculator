@@ -1,0 +1,1250 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CTC Calculator</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <script>
+    // Tailwind Config with dark mode enabled
+    tailwind.config = {
+      darkMode: 'class', 
+      theme: {
+        extend: {
+          fontFamily: { inter: ['Inter', 'sans-serif'] },
+          colors: { primary: '#3b82f6', accent: '#8b5cf6' }
+        }
+      }
+    }
+    
+    // Dark Mode Initializer
+    ;(function() {
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+  
+  <style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Hide number input arrows */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  
+    /* --- Improved Slider Styles --- */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 9999px;
+      background: linear-gradient(to right, #0d9488 0%, #0d9488 var(--value, 0%), transparent var(--value, 0%), transparent 100%);
+      background-color: #e5e7eb; /* gray-200 */
+      outline: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .dark input[type="range"] {
+      background-color: #374151; /* gray-700 */
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: transparent;
+      height: 8px;
+      border-radius: 9999px;
+    }
+    input[type="range"]::-moz-range-track {
+      background: transparent;
+      border: none;
+    }
+
+    /* --- Slider Thumb --- */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #0d9488; /* teal-600 */
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      margin-top: -6px; /* Center thumb on track */
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #0d9488; /* teal-600 */
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .dark input[type="range"]::-webkit-slider-thumb {
+      border: 3px solid #1f2937; /* gray-800 */
+    }
+    .dark input[type="range"]::-moz-range-thumb {
+      border: 3px solid #1f2937; /* gray-800 */
+    }
+    
+    /* --- Tab Styles --- */
+    .tab-btn {
+        @apply py-3 px-4 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 font-medium transition-all;
+    }
+    .tab-btn.tab-active {
+        @apply font-semibold text-teal-600 dark:text-teal-400 border-b-2 border-teal-600 dark:border-teal-400;
+    }
+    
+    /* --- Modal Styles --- */
+    .modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000; overflow-y: auto; backdrop-filter: blur(5px);
+    }
+    .modal-content {
+        position: relative;
+        margin: 10% auto; padding: 24px; width: 90%; max-width: 600px; border-radius: 16px;
+        background: white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        color: #374151; /* text-gray-700 */
+    }
+    .dark .modal-content {
+        background: #1f2937; /* gray-800 */
+        border: 1px solid #4b5563; /* gray-600 */
+        color: #e5e7eb; /* gray-200 */
+    }
+    .close-modal {
+        position: absolute; right: 15px; top: 10px; font-size: 24px;
+        cursor: pointer; font-weight: bold; color: #9ca3af; /* text-gray-400 */
+    }
+    .close-modal:hover { color: #374151; } /* text-gray-700 */
+    .dark .close-modal:hover { color: #fff; }
+
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+  
+  <div class="absolute top-0 left-0 w-96 h-96 bg-blue-200 dark:bg-blue-900/50 rounded-full filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+  <div class="absolute bottom-0 right-0 w-96 h-96 bg-teal-200 dark:bg-teal-900/50 rounded-full filter blur-3xl opacity-30 translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+
+  <header class="fixed w-full top-0 left-0 z-50 backdrop-blur-xl bg-white/50 dark:bg-gray-900/50 border-b border-gray-200/80 dark:border-white/10">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-teal-500 to-blue-500 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
+            💰 CTC Calculator 
+        </h1>
+
+        
+
+        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+            <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <svg id="theme-icon-dark" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div class="flex justify-center space-x-4 sm:space-x-8 text-gray-500 border-t border-gray-200/80 dark:border-white/10 text-sm sm:text-base font-extrabold">
+        <button class="tab-btn tab-active" data-tab="ctc-to-inhand">CTC → In-hand</button>
+        <button class="tab-btn" data-tab="inhand-to-ctc">In-hand → CTC</button>
+        <button class="tab-btn" data-tab="compare">Compare Offers</button>
+        <button class="tab-btn" data-tab="tax">Tax Calculator</button>
+         <button class="tab-btn" data-tab="tax">Hike Calculator</button>
+          <button class="tab-btn" data-tab="tax">Additional Calculator</button>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 relative z-10 pt-40">
+
+    <div id="tab-content">
+    
+        <div id="ctc-to-inhand" class="tab-panel">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            
+                <div class="bg-transparent dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                    
+                    <div>
+                      <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Enter your Annual CTC</label>
+                      <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                          <input type="range" id="ctcSlider" min="100000" max="10000000" step="10000" value="1000000" class="w-full" />
+                        </div>
+                        <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full min-w-[130px] px-4 py-2">
+                          <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
+                          <input type="number" id="ctcInputBox" 
+                                 class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none" 
+                                 value="1000000" step="10000" min="100000" max="10000000">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <hr class="border-gray-200/80 dark:border-gray-700/80">
+
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Tax Regime & Location</h3>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Regime:</span>
+                            <div class="flex items-center space-x-3">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="taxRegime" value="new" checked class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-teal-500">
+                                    <span class="ml-2 text-gray-700 dark:text-gray-300">New</span>
+                                </label>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="taxRegime" value="old" class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-teal-500">
+                                    <span class="ml-2 text-gray-700 dark:text-gray-300">Old</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="location" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Location</label>
+                            <select id="location" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                                <option value="TN">Tamil Nadu</option>
+                                <option value="KA">Karnataka</option>
+                                <option value="MH">Maharashtra</option>
+                                <option value="DL">Delhi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-200/80 dark:border-gray-700/80">
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Salary Components</h3>
+                            <div class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="inputMode" value="percentage" checked class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-800 focus:ring-teal-500">
+                                    <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">%</span>
+                                </label>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="inputMode" value="amount" class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-800 focus:ring-teal-500">
+                                    <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">₹</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="basicInput">Basic <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="basicInput" value="40" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            </div>
+                             <div>
+                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="hraInput">HRA <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="hraInput" value="20" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="daInput">DA <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="daInput" value="10" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            </div>
+                             <div>
+                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="ltaInput">LTA <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="ltaInput" value="5" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            </div>
+                             <div>
+                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="bonusInput">Bonus <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="bonusInput" value="10" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="specialInput">Special <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="specialInput" value="15" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 opacity-70 cursor-not-allowed" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="border-gray-200/80 dark:border-gray-700/80">
+
+                    <div class="space-y-3">
+                         <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Deductions & Benefits</h3>
+                         <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="includePF" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                            <span class="ml-2 text-gray-700 dark:text-gray-300">EPF Applicable</span>
+                         </label>
+                         <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="includeProfTax" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                            <span class="ml-2 text-gray-700 dark:text-gray-300">Professional Tax</span>
+                         </label>
+                    </div>
+
+                </div>
+
+                <div class="bg-transparent dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                    <h2 id="regimeTitle" class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Salary Breakdown</h2>
+                    
+                    <div class="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg text-center">
+                        <p class="text-center text-gray-600 dark:text-gray-400 text-sm">Net Monthly Salary</p>
+                        <h3 class="text-3xl font-bold text-center text-teal-600 dark:text-teal-400" id="monthlyInHand">₹0</h3>
+                        <p class="text-center text-gray-500 dark:text-gray-500 text-sm mt-2">Net Annual: <span id="netYearly" class="font-medium text-gray-600 dark:text-gray-400">₹0</span></p>
+                    </div>
+
+                    <canvas id="salaryChart" class="max-h-48"></canvas>
+                    
+                    <div>
+                        <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Earnings Breakdown (Annual)</h3>
+                        <div class="space-y-2 text-sm" id="earningsBreakdown">
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Basic Salary</span> <span id="basicAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">HRA</span> <span id="hraAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">DA</span> <span id="daAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">LTA</span> <span id="ltaAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Special Allowance</span> <span id="specialAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Performance Bonus</span> <span id="bonusAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between font-semibold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
+                                <span>Gross Salary</span> <span id="grossYearly">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Tax Calculation</h3>
+                        <div class="space-y-2 text-sm" id="taxBreakdown">
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gross Salary</span> <span id="grossForTax" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between text-red-600 dark:text-red-400">
+                                <span>Standard Deduction</span> <span id="standardDeduction">-₹0</span>
+                            </div>
+                            <div class="flex justify-between font-semibold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
+                                <span>Taxable Income</span> <span id="taxableIncome">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-transparent dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                    
+                    <div>
+                        <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Deductions (Annual)</h3>
+                        <div class="space-y-2 text-sm" id="deductionsBreakdown">
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">EPF (Employee)</span> <span id="epfEmployee" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">EPF (Employer)</span> <span id="epfEmployer" class="text-gray-800 dark:text-gray-200 font-medium">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Professional Tax</span> <span id="profTaxAmount" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 dark:text-gray-400">Income Tax</span>
+                                <div class="flex items-center">
+                                    <span id="incomeTax" class="text-red-600 dark:text-red-400 font-medium mr-2">₹0</span>
+                                    <button id="showTaxDetails" class="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 text-xs font-medium">(Details)</button>
+                                </div>
+                            </div>
+                            <div class="flex justify-between font-semibold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-red-700 dark:text-red-400">
+                                <span>Total Deductions</span> <span id="deductionsYearly">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="border-gray-200/80 dark:border-gray-700/80">
+
+                    <div>
+                        <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Cost to Company Breakup</h3>
+                        <div class="space-y-2 text-sm bg-gray-100 dark:bg-gray-900/50 p-3 rounded-lg">
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gross Salary</span> <span id="grossSalaryCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Employer EPF</span> <span id="employerEpfCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                            <div class="flex justify-between font-bold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
+                                <span>Total CTC</span> <span id="totalCtc">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="border-gray-200/80 dark:border-gray-700/80">
+
+                    <div>
+                         <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Download Report</h3>
+                         <div class="grid grid-cols-2 gap-4">
+                            <button id="downloadPdf" class="flex items-center justify-center bg-teal-600 text-white px-4 py-3 rounded-lg hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 font-semibold transition-all">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                PDF
+                            </button>
+                            <button id="downloadExcel" class="flex items-center justify-center bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 font-semibold transition-all">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="inhand-to-ctc" class="tab-panel hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+                <div class="bg-white/60 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Calculate CTC from In-hand</h2>
+                    
+                    <div>
+                      <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Desired Net Monthly In-hand</label>
+                      <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                          <input type="range" id="monthlyInHandSlider" min="10000" max="500000" step="1000" value="70000" class="w-full" />
+                        </div>
+                        <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full min-w-[130px] px-4 py-2">
+                          <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
+                          <input type="number" id="monthlyInHandInputBox" 
+                                 class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none" 
+                                 value="70000" step="1000" min="10000" max="500000">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <hr class="border-gray-200/80 dark:border-gray-700/80">
+                    
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Tax Regime & Location</h3>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Regime:</span>
+                            <div class="flex items-center space-x-3">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="taxRegime_reverse" value="new" checked class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-teal-500">
+                                    <span class="ml-2 text-gray-700 dark:text-gray-300">New</span>
+                                </label>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="taxRegime_reverse" value="old" class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-teal-500">
+                                    <span class="ml-2 text-gray-700 dark:text-gray-300">Old</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="location_reverse" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Location</label>
+                            <select id="location_reverse" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                                <option value="TN">Tamil Nadu</option>
+                                <option value="KA">Karnataka</option>
+                                <option value="MH">Maharashtra</option>
+                                <option value="DL">Delhi</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <hr class="border-gray-200/80 dark:border-gray-700/80">
+
+                    <div class="space-y-3">
+                         <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Assumed Deductions</h3>
+                         <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="includePF_reverse" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                            <span class="ml-2 text-gray-700 dark:text-gray-300">EPF Applicable</span>
+                         </label>
+                         <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="includeProfTax_reverse" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                            <span class="ml-2 text-gray-700 dark:text-gray-300">Professional Tax</span>
+                         </label>
+                    </div>
+
+                    <button id="calculateReverse" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-full transition-colors duration-200 shadow-lg">
+                      Calculate Required CTC
+                    </button>
+                </div>
+                
+                <div id="reverseResultCard" class="lg:col-span-2 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white/60 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                            <h2 id="reverseRegimeTitle" class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Required CTC Breakdown</h2>
+                            
+                            <div class="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg text-center">
+                                <p class="text-center text-gray-600 dark:text-gray-400 text-sm">Required Annual CTC</p>
+                                <h3 class="text-3xl font-bold text-center text-blue-600 dark:text-blue-400" id="calculatedCTC">₹0</h3>
+                                <p class="text-center text-gray-500 dark:text-gray-500 text-sm mt-2">Gives Net Monthly: <span id="calculatedMonthlyInHand" class="font-medium text-gray-600 dark:text-gray-400">₹0</span></p>
+                            </div>
+                            
+                            <canvas id="reverseSalaryChart" class="max-h-48"></canvas>
+                            
+                            <div>
+                                <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Cost to Company Breakup</h3>
+                                <div class="space-y-2 text-sm bg-gray-100 dark:bg-gray-900/50 p-3 rounded-lg">
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gross Salary</span> <span id="reverse_grossSalaryCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Employer EPF</span> <span id="reverse_employerEpfCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                    <div class="flex justify-between font-bold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
+                                        <span>Total CTC</span> <span id="reverse_totalCtc">₹0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-transparent dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                             <div>
+                                <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Earnings Breakdown (Annual)</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Basic Salary</span> <span id="reverse_basicAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">HRA</span> <span id="reverse_hraAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Allowances</span> <span id="reverse_specialAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                    <div class="flex justify-between font-semibold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
+                                        <span>Gross Salary</span> <span id="reverse_grossYearly">₹0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <hr class="border-gray-200/80 dark:border-gray-700/80">
+
+                            <div>
+                                <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Deductions (Annual)</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">EPF (Employee)</span> <span id="reverse_epfEmployee" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Professional Tax</span> <span id="reverse_profTaxAmount" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Income Tax</span> <span id="reverse_incomeTax" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
+                                    <div class="flex justify-between font-semibold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-red-700 dark:text-red-400">
+                                        <span>Total Deductions</span> <span id="reverse_deductionsYearly">₹0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="compare" class="tab-panel hidden">
+             <div class="bg-white/60 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-8 max-w-3xl mx-auto text-center">
+                <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Compare Two CTC Offers</h3>
+               
+             </div>
+        </div>
+        
+        <div id="tax" class="tab-panel hidden">
+             <div class="bg-white/60 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-8 max-w-3xl mx-auto text-center">
+                <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Tax Calculator (Old vs New)</h3>
+                
+             </div>
+        </div>
+        
+    </div>
+  </main>
+  
+  <div id="taxDetailsModal" class="modal">
+      <div class="modal-content">
+          <span class="close-modal">&times;</span>
+          <h2 class="text-xl font-semibold mb-4" id="taxModalTitle">Detailed Tax Calculation</h2>
+          <div class="space-y-4">
+              <div>
+                  <h3 class="font-medium mb-2">Income Tax Slabs</h3>
+                  <div id="taxSlabsBreakdown" class="text-sm space-y-2"></div>
+              </div>
+              <div>
+                  <h3 class="font-medium mb-2">Additional Charges</h3>
+                  <div id="additionalCharges" class="text-sm space-y-2">
+                      <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Tax before Surcharge/Cess</span><span id="taxBeforeCharges">₹0</span></div>
+                      <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Surcharge</span><span id="taxSurcharge">₹0</span></div>
+                      <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Health & Education Cess (4%)</span><span id="educationCess">₹0</span></div>
+                  </div>
+              </div>
+              <div class="pt-4 border-t border-gray-200 dark:border-gray-600">
+                  <div class="flex justify-between font-semibold">
+                      <span>Total Tax Liability</span>
+                      <span id="totalTaxLiability">₹0</span>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+  <script>
+    // --- (Global) Helper Functions ---
+    
+    // Format number to Indian currency (with K, L, Cr)
+    function formatIndianCurrency(num) {
+      num = Math.round(num);
+      const units = Math.abs(num) >= 1e7 ? Math.abs(num) / 1e7 : Math.abs(num) >= 1e5 ? Math.abs(num) / 1e5 : Math.abs(num) >= 1e3 ? Math.abs(num) / 1e3 : Math.abs(num);
+      if (Math.abs(num) >= 1e7) {
+        return '₹ ' + units.toFixed(2) + ' Cr';
+      } else if (Math.abs(num) >= 1e5) {
+        return '₹ ' + units.toFixed(2) + ' L';
+      } else if (Math.abs(num) >= 1e3) {
+         return '₹ ' + units.toFixed(0) + ' K';
+      }
+      return '₹ ' + num.toLocaleString('en-IN');
+    }
+    
+    // Simple version for non-K/L/Cr values
+    const f_simple = (val) => `₹${Math.round(val).toLocaleString('en-IN')}`;
+    const neg_f_simple = (val) => `-₹${Math.round(val).toLocaleString('en-IN')}`;
+
+
+    // Update slider background gradient
+    function updateSliderBackground(slider) {
+      const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+      slider.style.setProperty('--value', value + '%');
+    }
+    
+    // Get Chart color based on theme
+    function getChartLabelColor() {
+        if (document.documentElement.classList.contains('dark')) {
+            return '#d1d5db'; // gray-300
+        }
+        return '#374151'; // gray-700
+    }
+
+    // --- (Global) CTC Calculator Logic ---
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        let calculationResults = {};
+        let salaryChart;
+        let reverseSalaryChart; // <-- JS CHANGE 1: Add new chart variable
+
+        // --- Get All DOM Elements ---
+        
+        // Theme
+        const themeToggle = document.getElementById('theme-toggle');
+        const lightIcon = document.getElementById('theme-icon-light');
+        const darkIcon = document.getElementById('theme-icon-dark');
+        
+        // Tab 1 (CTC -> In-hand)
+        const ctcSlider = document.getElementById('ctcSlider');
+        const ctcInputBox = document.getElementById('ctcInputBox');
+        const includePF = document.getElementById('includePF');
+        const includeProfTax = document.getElementById('includeProfTax');
+        const locationSelect = document.getElementById('location');
+        const basicInput = document.getElementById('basicInput');
+        const hraInput = document.getElementById('hraInput');
+        const daInput = document.getElementById('daInput');
+        const ltaInput = document.getElementById('ltaInput');
+        const specialInput = document.getElementById('specialInput');
+        const bonusInput = document.getElementById('bonusInput');
+        const taxRegimeInputs = document.querySelectorAll('input[name="taxRegime"]');
+        const inputModeInputs = document.querySelectorAll('input[name="inputMode"]');
+
+        // Tab 2 (In-hand -> CTC)
+        const monthlyInHandSlider = document.getElementById('monthlyInHandSlider');
+        const monthlyInHandInputBox = document.getElementById('monthlyInHandInputBox');
+        const reverseTaxRegimeInputs = document.querySelectorAll('input[name="taxRegime_reverse"]');
+        const reverseLocationSelect = document.getElementById('location_reverse');
+        const reverseIncludePF = document.getElementById('includePF_reverse');
+        const reverseIncludeProfTax = document.getElementById('includeProfTax_reverse');
+        const reverseCalcButton = document.getElementById('calculateReverse');
+
+        // Tabs
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        // Modal
+        const modal = document.getElementById('taxDetailsModal');
+        const showTaxDetails = document.getElementById('showTaxDetails');
+        const closeModal = document.querySelector('.close-modal');
+
+        // Downloads
+        const downloadPdfBtn = document.getElementById('downloadPdf');
+        const downloadExcelBtn = document.getElementById('downloadExcel');
+        
+
+        // --- Tax Slabs ---
+        const oldTaxSlabs = [
+            { limit: 250000, rate: 0 },
+            { limit: 500000, rate: 0.05 },
+            { limit: 1000000, rate: 0.20 },
+            { limit: Infinity, rate: 0.30 }
+        ];
+        const newTaxSlabs = [
+            { limit: 300000, rate: 0 },
+            { limit: 600000, rate: 0.05 },
+            { limit: 900000, rate: 0.10 },
+            { limit: 1200000, rate: 0.15 },
+            { limit: 1500000, rate: 0.20 },
+            { limit: Infinity, rate: 0.30 }
+        ];
+
+        // --- (Section 0) Theme Toggle Logic ---
+        function updateThemeIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                lightIcon.classList.remove('hidden');
+                darkIcon.classList.add('hidden');
+            } else {
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+            }
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeIcon();
+            
+            // <-- JS CHANGE 2: Update BOTH charts on theme change -->
+            if (salaryChart) {
+                salaryChart.options.plugins.legend.labels.color = getChartLabelColor();
+                salaryChart.update();
+            }
+            if (reverseSalaryChart) {
+                reverseSalaryChart.options.plugins.legend.labels.color = getChartLabelColor();
+                reverseSalaryChart.update();
+            }
+        });
+        
+        // --- (Section 1) Tab Switching ---
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+                tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+                tabPanels.forEach(panel => panel.classList.add('hidden'));
+                button.classList.add('tab-active');
+                document.getElementById(targetTab).classList.remove('hidden');
+            });
+        });
+
+        // --- (Section 2) CTC -> In-Hand Calculator ---
+
+        function updateInputLabels() {
+            const mode = document.querySelector('input[name="inputMode"]:checked').value;
+            const labelSymbol = (mode === 'percentage') ? '(%)' : '(₹)';
+            document.querySelectorAll('.component-label').forEach(label => {
+                label.textContent = labelSymbol;
+            });
+
+            if (mode === 'percentage') {
+                basicInput.value = 40;
+                hraInput.value = 20;
+                daInput.value = 10;
+                ltaInput.value = 5;
+                bonusInput.value = 10;
+                specialInput.value = 15;
+            } else {
+                const ctc = parseFloat(ctcSlider.value) || 0;
+                basicInput.value = (ctc * 0.40).toFixed(0);
+                hraInput.value = (ctc * 0.20).toFixed(0);
+                daInput.value = (ctc * 0.10).toFixed(0);
+                ltaInput.value = (ctc * 0.05).toFixed(0);
+                bonusInput.value = (ctc * 0.10).toFixed(0);
+                specialInput.value = (ctc * 0.15).toFixed(0);
+            }
+        }
+
+        // Main calculation function
+        function calculateSalary() {
+            const ctc = parseFloat(ctcSlider.value) || 0; 
+            const inputMode = document.querySelector('input[name="inputMode"]:checked').value;
+            const taxRegime = document.querySelector('input[name="taxRegime"]:checked').value;
+            const location = locationSelect.value;
+            let employerPF = 0, tempBasic = 0;
+
+            if (includePF.checked) {
+                if (inputMode === 'percentage') {
+                    tempBasic = ctc * (parseFloat(basicInput.value) / 100);
+                } else {
+                    tempBasic = parseFloat(basicInput.value);
+                }
+                employerPF = tempBasic * 0.12;
+            }
+            const grossSalary = ctc - employerPF;
+
+            let components = {};
+            if (inputMode === 'percentage') {
+                const basicPerc = parseFloat(basicInput.value) || 0;
+                const hraPerc = parseFloat(hraInput.value) || 0;
+                const daPerc = parseFloat(daInput.value) || 0;
+                const ltaPerc = parseFloat(ltaInput.value) || 0;
+                const bonusPerc = parseFloat(bonusInput.value) || 0;
+                const otherSumPerc = basicPerc + hraPerc + daPerc + ltaPerc + bonusPerc;
+                const specialPerc = Math.max(0, 100 - otherSumPerc);
+                specialInput.value = specialPerc.toFixed(1);
+                components = {
+                    basic: grossSalary * (basicPerc / 100),
+                    hra: grossSalary * (hraPerc / 100),
+                    da: grossSalary * (daPerc / 100),
+                    lta: grossSalary * (ltaPerc / 100),
+                    bonus: grossSalary * (bonusPerc / 100),
+                    special: grossSalary * (specialPerc / 100)
+                };
+            } else {
+                components.basic = parseFloat(basicInput.value) || 0;
+                components.hra = parseFloat(hraInput.value) || 0;
+                components.da = parseFloat(daInput.value) || 0;
+                components.lta = parseFloat(ltaInput.value) || 0;
+                components.bonus = parseFloat(bonusInput.value) || 0;
+                const otherSum = components.basic + components.hra + components.da + components.lta + components.bonus;
+                components.special = Math.max(0, grossSalary - otherSum);
+                specialInput.value = components.special.toFixed(0);
+            }
+
+            const employeePF = includePF.checked ? components.basic * 0.12 : 0;
+            let profTax = 0;
+            if (includeProfTax.checked) {
+                const rates = { 'TN': 2500, 'KA': 2400, 'MH': 2500, 'DL': 2400 };
+                profTax = rates[location] || 0;
+            }
+            const standardDeduction = 75000;
+            let taxableIncome = grossSalary;
+            let taxDetails = {};
+
+            if (taxRegime === 'old') {
+                const hraExemption = Math.min(components.hra, (components.basic + components.da) * 0.50);
+                const ltaExemption = components.lta;
+                const section80C = Math.min(employeePF, 150000);
+                taxableIncome -= (standardDeduction + hraExemption + ltaExemption + section80C + profTax);
+                taxDetails = calculateTax(taxableIncome, oldTaxSlabs);
+                if (taxableIncome <= 500000) taxDetails.finalTax = Math.max(0, taxDetails.finalTax - 12500);
+            } else {
+                taxableIncome -= (standardDeduction + profTax);
+                taxDetails = calculateTax(taxableIncome, newTaxSlabs);
+                if (taxableIncome <= 700000) taxDetails.finalTax = 0;
+            }
+
+            taxableIncome = Math.max(0, taxableIncome);
+            const totalTax = taxDetails.finalTax;
+            const totalDeductions = employeePF + profTax + totalTax;
+            const netInHandYearly = grossSalary - totalDeductions;
+            const netInHandMonthly = netInHandYearly / 12;
+
+            calculationResults = {
+                ctc, taxRegime, components, grossSalary, employerPF,
+                deductions: { employeePF, profTax, totalTax, total: totalDeductions },
+                taxCalc: { taxableIncome, standardDeduction, ...taxDetails },
+                netInHandYearly, netInHandMonthly
+            };
+
+            updateUI(calculationResults);
+        }
+
+        // Generic tax calculation logic
+        function calculateTax(income, slabs) {
+            let tax = 0, remainingIncome = income, previousLimit = 0, slabBreakdown = [];
+            for (const slab of slabs) {
+                if (remainingIncome <= 0) break;
+                const taxableInSlab = Math.min(remainingIncome, slab.limit - previousLimit);
+                const taxInSlab = taxableInSlab * slab.rate;
+                tax += taxInSlab;
+                slabBreakdown.push({
+                    range: `₹${previousLimit.toLocaleString('en-IN')} - ₹${slab.limit === Infinity ? 'Above' : slab.limit.toLocaleString('en-IN')}`,
+                    rate: slab.rate * 100, tax: taxInSlab
+                });
+                remainingIncome -= taxableInSlab;
+                previousLimit = slab.limit;
+            }
+            const taxBeforeCharges = tax;
+            let surcharge = 0;
+            if (income > 5000000 && income <= 10000000) surcharge = tax * 0.10;
+            else if (income > 10000000 && income <= 20000000) surcharge = tax * 0.15;
+            else if (income > 20000000 && income <= 50000000) surcharge = tax * 0.25;
+            else if (income > 50000000) surcharge = tax * 0.37;
+            tax += surcharge;
+            const cess = tax * 0.04;
+            const finalTax = tax + cess;
+            return { taxBeforeCharges, surcharge, cess, finalTax, slabBreakdown };
+        }
+
+        // Update UI for Tab 1
+        function updateUI(results) {
+            const { components, taxRegime, grossSalary, employerPF, deductions, taxCalc, netInHandYearly, netInHandMonthly, ctc } = results;
+            document.getElementById('regimeTitle').textContent = `Salary Breakdown under ${taxRegime === 'old' ? 'Old' : 'New'} Tax Regime`;
+            document.getElementById('monthlyInHand').textContent = formatIndianCurrency(netInHandMonthly);
+            document.getElementById('netYearly').textContent = formatIndianCurrency(netInHandYearly);
+            document.getElementById('basicAmount').textContent = f_simple(components.basic);
+            document.getElementById('hraAmount').textContent = f_simple(components.hra);
+            document.getElementById('daAmount').textContent = f_simple(components.da);
+            document.getElementById('ltaAmount').textContent = f_simple(components.lta);
+            document.getElementById('specialAmount').textContent = f_simple(components.special);
+            document.getElementById('bonusAmount').textContent = f_simple(components.bonus);
+            document.getElementById('grossYearly').textContent = f_simple(grossSalary);
+            document.getElementById('grossForTax').textContent = f_simple(grossSalary);
+            document.getElementById('standardDeduction').textContent = neg_f_simple(taxCalc.standardDeduction);
+            document.getElementById('taxableIncome').textContent = f_simple(taxCalc.taxableIncome);
+            document.getElementById('epfEmployee').textContent = neg_f_simple(deductions.employeePF);
+            document.getElementById('epfEmployer').textContent = f_simple(employerPF);
+            document.getElementById('profTaxAmount').textContent = neg_f_simple(deductions.profTax);
+            document.getElementById('incomeTax').textContent = neg_f_simple(deductions.totalTax);
+            document.getElementById('deductionsYearly').textContent = neg_f_simple(deductions.total);
+            document.getElementById('grossSalaryCtc').textContent = f_simple(grossSalary);
+            document.getElementById('employerEpfCtc').textContent = f_simple(employerPF);
+            document.getElementById('totalCtc').textContent = f_simple(ctc);
+            updateChart(results);
+        }
+
+        // --- (Section 3) Chart.js ---
+        function initializeChart() {
+            const ctx = document.getElementById('salaryChart').getContext('2d');
+            salaryChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Net In-Hand', 'Employee PF', 'Prof. Tax', 'Income Tax'],
+                    datasets: [{ 
+                        data: [1, 0, 0, 0], 
+                        backgroundColor: ['#0d9488', '#f59e0b', '#eab308', '#ef4444'], // Teal, Amber, Yellow, Red
+                        borderWidth: 0 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 10 },
+                                color: getChartLabelColor() // Dynamic color
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart(results) {
+            if (!salaryChart) {
+                initializeChart();
+            }
+            salaryChart.data.datasets[0].data = [
+                results.netInHandYearly,
+                results.deductions.employeePF,
+                results.deductions.profTax,
+                results.deductions.totalTax
+            ];
+            salaryChart.update();
+        }
+        
+        // <-- JS CHANGE 3: Add functions for the new reverse chart -->
+        function initializeReverseChart() {
+            const ctx = document.getElementById('reverseSalaryChart').getContext('2d');
+            reverseSalaryChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Net In-Hand', 'Employee PF', 'Prof. Tax', 'Income Tax'],
+                    datasets: [{ 
+                        data: [1, 0, 0, 0], 
+                        backgroundColor: ['#0d9488', '#f59e0b', '#eab308', '#ef4444'], // Teal, Amber, Yellow, Red
+                        borderWidth: 0 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 10 },
+                                color: getChartLabelColor() // Dynamic color
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateReverseChart(results) {
+            if (!reverseSalaryChart) {
+                initializeReverseChart();
+            }
+            reverseSalaryChart.data.datasets[0].data = [
+                results.netInHandYearly,
+                results.deductions.employeePF,
+                results.deductions.profTax,
+                results.deductions.totalTax
+            ];
+            reverseSalaryChart.update();
+        }
+
+        // --- (Section 4) In-hand -> CTC Calculator ---
+        
+        function handleReverseCalculation() {
+            const targetInHandMonthly = parseFloat(monthlyInHandSlider.value) || 0;
+            if (targetInHandMonthly === 0) return;
+
+            const params = {
+                taxRegime: document.querySelector('input[name="taxRegime_reverse"]:checked').value,
+                location: reverseLocationSelect.value,
+                pf: reverseIncludePF.checked,
+                profTax: reverseIncludeProfTax.checked
+            };
+
+            let minCTC = targetInHandMonthly * 12;
+            let maxCTC = targetInHandMonthly * 24;
+            let finalResults = {};
+            
+            for (let i = 0; i < 30; i++) {
+                let trialCTC = (minCTC + maxCTC) / 2;
+                finalResults = calculateInHandFromCTC(trialCTC, params);
+                let currentInHand = finalResults.netInHandMonthly;
+                if (Math.abs(currentInHand - targetInHandMonthly) < 0.01) {
+                    break;
+                }
+                if (currentInHand < targetInHandMonthly) {
+                    minCTC = trialCTC;
+                } else {
+                    maxCTC = trialCTC;
+                }
+            }
+            updateReverseUI(finalResults, targetInHandMonthly);
+        }
+        
+        // Helper for reverse calculation (uses standard 40/20/10/5/10/15 split)
+        function calculateInHandFromCTC(trialCTC, params) {
+            const { taxRegime, location, pf, profTax } = params;
+            const basicPerc = 40, hraPerc = 20, daPerc = 10, ltaPerc = 5, bonusPerc = 10, specialPerc = 15;
+            let employerPF = 0, tempBasic = 0;
+            if (pf) {
+                tempBasic = trialCTC * (basicPerc / 100);
+                employerPF = tempBasic * 0.12;
+            }
+            const grossSalary = trialCTC - employerPF;
+            
+            const components = {
+                basic: grossSalary * (basicPerc / 100),
+                hra: grossSalary * (hraPerc / 100),
+                da: grossSalary * (daPerc / 100),
+                lta: grossSalary * (ltaPerc / 100),
+                bonus: grossSalary * (bonusPerc / 100),
+                special: grossSalary * (specialPerc / 100)
+            };
+            
+            const employeePF = pf ? components.basic * 0.12 : 0;
+            let professionalTax = 0;
+            if (profTax) {
+                const rates = { 'TN': 2500, 'KA': 2400, 'MH': 2500, 'DL': 2400 }; 
+                professionalTax = rates[location] || 0;
+            }
+            
+            const standardDeduction = 75000;
+            let taxableIncome = grossSalary;
+            let taxDetails = {};
+            
+            if (taxRegime === 'old') {
+                const hraExemption = Math.min(components.hra, (components.basic + components.da) * 0.50); 
+                const ltaExemption = components.lta;
+                const section80C = Math.min(employeePF, 150000);
+                taxableIncome -= (standardDeduction + hraExemption + ltaExemption + section80C + professionalTax);
+                taxDetails = calculateTax(taxableIncome, oldTaxSlabs);
+                if (taxableIncome <= 500000) taxDetails.finalTax = Math.max(0, taxDetails.finalTax - 12500);
+            } else {
+                taxableIncome -= (standardDeduction + professionalTax);
+                taxDetails = calculateTax(taxableIncome, newTaxSlabs);
+                if (taxableIncome <= 700000) taxDetails.finalTax = 0;
+            }
+            
+            taxableIncome = Math.max(0, taxableIncome);
+            const totalTax = taxDetails.finalTax;
+            const totalDeductions = employeePF + professionalTax + totalTax;
+            const netInHandYearly = grossSalary - totalDeductions;
+            const netInHandMonthly = netInHandYearly / 12;
+
+            return {
+                ctc: trialCTC, taxRegime, components, grossSalary, employerPF,
+                deductions: { employeePF, profTax: professionalTax, totalTax, total: totalDeductions },
+                netInHandYearly, netInHandMonthly
+            };
+        }
+        
+        // Update UI for Tab 2
+        function updateReverseUI(results, targetInHand) {
+            const { ctc, taxRegime, components, grossSalary, employerPF, deductions, netInHandMonthly } = results;
+            
+            document.getElementById('reverseResultCard').classList.remove('hidden');
+            document.getElementById('reverseRegimeTitle').textContent = `Required CTC Breakdown (${taxRegime} Regime)`;
+            document.getElementById('calculatedCTC').textContent = formatIndianCurrency(ctc);
+            document.getElementById('calculatedMonthlyInHand').textContent = formatIndianCurrency(netInHandMonthly); 
+            
+            document.getElementById('reverse_basicAmount').textContent = f_simple(components.basic);
+            document.getElementById('reverse_hraAmount').textContent = f_simple(components.hra);
+            const otherAllowances = components.da + components.lta + components.special + components.bonus;
+            document.getElementById('reverse_specialAmount').textContent = f_simple(otherAllowances);
+            document.getElementById('reverse_grossYearly').textContent = f_simple(grossSalary);
+            
+            document.getElementById('reverse_epfEmployee').textContent = neg_f_simple(deductions.employeePF);
+            document.getElementById('reverse_profTaxAmount').textContent = neg_f_simple(deductions.profTax);
+            document.getElementById('reverse_incomeTax').textContent = neg_f_simple(deductions.totalTax);
+            document.getElementById('reverse_deductionsYearly').textContent = neg_f_simple(deductions.total);
+            
+            document.getElementById('reverse_grossSalaryCtc').textContent = f_simple(grossSalary);
+            document.getElementById('reverse_employerEpfCtc').textContent = f_simple(employerPF);
+            document.getElementById('reverse_totalCtc').textContent = f_simple(ctc);
+            
+            // <-- JS CHANGE 4: Update the reverse chart -->
+            updateReverseChart(results);
+        }
+
+
+        // --- (Section 5) Modal Logic ---
+        showTaxDetails.addEventListener('click', () => {
+            populateTaxModal(calculationResults);
+            modal.style.display = 'block';
+        });
+        closeModal.addEventListener('click', () => modal.style.display = 'none');
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) modal.style.display = 'none';
+        });
+
+        function populateTaxModal(results) {
+            if (!results.taxCalc) return;
+            const { taxRegime, taxCalc } = results;
+            const { slabBreakdown, taxBeforeCharges, surcharge, cess, finalTax } = taxCalc;
+            document.getElementById('taxModalTitle').textContent = `Detailed Tax Calculation (${taxRegime} Regime)`;
+            const slabsContainer = document.getElementById('taxSlabsBreakdown');
+            slabsContainer.innerHTML = '';
+            slabBreakdown.forEach(slab => {
+                const row = document.createElement('div');
+                row.className = 'flex justify-between items-center';
+                row.innerHTML = `
+                    <span class="text-gray-600 dark:text-gray-400">${slab.range}</span>
+                    <span class="text-sm bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">@ ${slab.rate}%</span>
+                    <span class="font-medium text-gray-800 dark:text-gray-200">${f_simple(slab.tax)}</span>`;
+                slabsContainer.appendChild(row);
+            });
+            document.getElementById('taxBeforeCharges').textContent = f_simple(taxBeforeCharges);
+            document.getElementById('taxSurcharge').textContent = f_simple(surcharge);
+            document.getElementById('educationCess').textContent = f_simple(cess);
+            document.getElementById('totalTaxLiability').textContent = f_simple(finalTax);
+        }
+
+        // --- (Section 6) Download Logic ---
+        downloadPdfBtn.addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const { components, grossSalary, employerPF, deductions, netInHandYearly, netInHandMonthly, ctc, taxRegime } = calculationResults;
+            doc.setFontSize(18);
+            doc.text('Salary Breakdown', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text(`Tax Regime: ${taxRegime === 'old' ? 'Old' : 'New'}`, 105, 30, { align: 'center' });
+            let y = 45;
+            doc.setFontSize(14); doc.text('Summary', 20, y); y += 10;
+            doc.setFontSize(12);
+            doc.text(`Total CTC:`, 20, y); doc.text(f_simple(ctc), 180, y, { align: 'right' }); y += 8;
+            doc.text(`Net Annual Salary:`, 20, y); doc.text(f_simple(netInHandYearly), 180, y, { align: 'right' }); y += 8;
+            doc.text(`Net Monthly Salary:`, 20, y); doc.text(f_simple(netInHandMonthly), 180, y, { align: 'right' }); y += 15;
+            doc.setFontSize(14); doc.text('Earnings (Annual)', 20, y); y += 10;
+            doc.setFontSize(12);
+            doc.text('Basic Salary:', 20, y); doc.text(f_simple(components.basic), 180, y, { align: 'right' }); y += 8;
+            doc.text('HRA:', 20, y); doc.text(f_simple(components.hra), 180, y, { align: 'right' }); y += 8;
+            doc.text('DA:', 20, y); doc.text(f_simple(components.da), 180, y, { align: 'right' }); y += 8;
+            doc.text('LTA:', 20, y); doc.text(f_simple(components.lta), 180, y, { align: 'right' }); y += 8;
+            doc.text('Special Allowance:', 20, y); doc.text(f_simple(components.special), 180, y, { align: 'right' }); y += 8;
+            doc.text('Performance Bonus:', 20, y); doc.text(f_simple(components.bonus), 180, y, { align: 'right' }); y += 8;
+            doc.setFont(undefined, 'bold');
+            doc.text('Gross Salary:', 20, y); doc.text(f_simple(grossSalary), 180, y, { align: 'right' }); y += 15;
+            doc.setFont(undefined, 'normal'); doc.setFontSize(14);
+            doc.text('Deductions (Annual)', 20, y); y += 10;
+            doc.setFontSize(12);
+            doc.text('Employee EPF:', 20, y); doc.text(f_simple(deductions.employeePF), 180, y, { align: 'right' }); y += 8;
+            doc.text('Professional Tax:', 20, y); doc.text(f_simple(deductions.profTax), 180, y, { align: 'right' }); y += 8;
+            doc.text('Income Tax:', 20, y); doc.text(f_simple(deductions.totalTax), 180, y, { align: 'right' }); y += 8;
+            doc.setFont(undefined, 'bold');
+            doc.text('Total Deductions:', 20, y); doc.text(f_simple(deductions.total), 180, y, { align: 'right' }); y += 15;
+            doc.setFont(undefined, 'normal'); doc.setFontSize(14);
+            doc.text('CTC Breakup', 20, y); y += 10;
+            doc.setFontSize(12);
+            doc.text('Gross Salary:', 20, y); doc.text(f_simple(grossSalary), 180, y, { align: 'right' }); y += 8;
+            doc.text('Employer EPF:', 20, y); doc.text(f_simple(employerPF), 180, y, { align: 'right' }); y += 8;
+            doc.setFont(undefined, 'bold');
+            doc.text('Total CTC:', 20, y); doc.text(f_simple(ctc), 180, y, { align: 'right' });
+            doc.save('salary-breakdown.pdf');
+        });
+        
+        downloadExcelBtn.addEventListener('click', () => {
+            const { components, grossSalary, employerPF, deductions, netInHandYearly, netInHandMonthly, ctc, taxRegime } = calculationResults;
+            const wb = XLSX.utils.book_new();
+            const wsData = [
+                ['Salary Breakdown'], ['Tax Regime', taxRegime], [],
+                ['Summary', 'Amount'], ['Total CTC', ctc], ['Net Annual Salary', netInHandYearly], ['Net Monthly Salary', netInHandMonthly], [],
+                ['Earnings (Annual)', 'Amount'], ['Basic Salary', components.basic], ['HRA', components.hra], ['DA', components.da], ['LTA', components.lta], ['Special Allowance', components.special], ['Performance Bonus', components.bonus], ['Gross Salary', grossSalary], [],
+                ['Deductions (Annual)', 'Amount'], ['Employee EPF', deductions.employeePF], ['Professional Tax', deductions.profTax], ['Income Tax', deductions.totalTax], ['Total DeduCTIONS', deductions.total], [],
+                ['CTC Breakup', 'Amount'], ['Gross Salary', grossSalary], ['Employer EPF', employerPF], ['Total CTC', ctc]
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Salary Breakdown');
+            XLSX.writeFile(wb, 'salary-breakdown.xlsx');
+        });
+        
+        // --- (Section 7) Initial Load & Event Listeners ---
+        
+        function initializeCalculator() {
+            
+            // --- Tab 1 Listeners ---
+            const tab1Inputs = [
+                includePF, includeProfTax, locationSelect,
+                basicInput, hraInput, daInput, ltaInput, bonusInput
+            ];
+            tab1Inputs.forEach(input => input.addEventListener('input', calculateSalary)); 
+            taxRegimeInputs.forEach(input => input.addEventListener('change', calculateSalary));
+            inputModeInputs.forEach(input => input.addEventListener('change', () => {
+                updateInputLabels();
+                calculateSalary();
+            }));
+            
+            ctcSlider.addEventListener('input', (e) => {
+                ctcInputBox.value = e.target.value; 
+                updateSliderBackground(ctcSlider);
+                calculateSalary();
+            });
+
+            ctcInputBox.addEventListener('input', (e) => {
+                ctcSlider.value = e.target.value;
+                updateSliderBackground(ctcSlider);
+                calculateSalary();
+            });
+            
+            ctcInputBox.addEventListener('change', (e) => {
+                 let value = parseInt(e.target.value);
+                 const min = parseInt(ctcSlider.min);
+                 const max = parseInt(ctcSlider.max);
+                 if (isNaN(value) || value < min) value = min;
+                 if (value > max) value = max;
+                 e.target.value = value;
+                 ctcSlider.value = value;
+                 updateSliderBackground(ctcSlider);
+                 calculateSalary();
+            });
+            
+            
+            // --- Tab 2 Listeners ---
+            const tab2Inputs = [
+                reverseLocationSelect, reverseIncludePF, 
+                reverseIncludeProfTax
+            ];
+            tab2Inputs.forEach(input => input.addEventListener('input', handleReverseCalculation));
+            reverseTaxRegimeInputs.forEach(input => input.addEventListener('change', handleReverseCalculation));
+            reverseCalcButton.addEventListener('click', handleReverseCalculation);
+
+            monthlyInHandSlider.addEventListener('input', (e) => {
+                monthlyInHandInputBox.value = e.target.value;
+                updateSliderBackground(monthlyInHandSlider);
+                handleReverseCalculation();
+            });
+
+            monthlyInHandInputBox.addEventListener('input', (e) => {
+                monthlyInHandSlider.value = e.target.value;
+                updateSliderBackground(monthlyInHandSlider);
+                handleReverseCalculation();
+            });
+
+            monthlyInHandInputBox.addEventListener('change', (e) => {
+                 let value = parseInt(e.target.value);
+                 const min = parseInt(monthlyInHandSlider.min);
+                 const max = parseInt(monthlyInHandSlider.max);
+                 if (isNaN(value) || value < min) value = min;
+                 if (value > max) value = max;
+                 e.target.value = value;
+                 monthlyInHandSlider.value = value;
+                 updateSliderBackground(monthlyInHandSlider);
+                 handleReverseCalculation();
+            });
+            
+            // --- Initial Calls ---
+            updateThemeIcon(); // Set correct icon on load
+            updateInputLabels();
+            initializeChart(); // Initialize the first chart
+            
+            // Update slider backgrounds on load
+            updateSliderBackground(ctcSlider);
+            updateSliderBackground(monthlyInHandSlider);
+            
+            // Update input BOX values on load
+            ctcInputBox.value = ctcSlider.value;
+            monthlyInHandInputBox.value = monthlyInHandSlider.value;
+            
+            // Run initial calculations
+            calculateSalary();
+            handleReverseCalculation(); // This will also initialize the reverse chart
+        }
+        
+        // Run everything
+        initializeCalculator();
+    });
+  </script>
+</body>
+</html>
