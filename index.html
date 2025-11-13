@@ -24,13 +24,13 @@
     }
     
     // Dark Mode Initializer
-    ;(function() {
-      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    })();
+;(function() {
+  if (localStorage.getItem('theme') === 'dark') { // Only apply dark mode if explicitly saved
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+})();
   </script>
   
   <style>
