@@ -599,7 +599,22 @@
                                 </div>
                             </div>
                             
-                        </div>
+                            <hr class="border-gray-200/80 dark:border-gray-700/80">
+
+                            <div>
+                                <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Download Report</h3>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button id="downloadPdf_reverse" class="flex items-center justify-center bg-teal-600 text-white px-4 py-3 rounded-lg hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 font-semibold transition-all">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                        PDF
+                                    </button>
+                                    <button id="downloadExcel_reverse" class="flex items-center justify-center bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 font-semibold transition-all">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                        Excel
+                                    </button>
+                                </div>
+                            </div>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -608,28 +623,28 @@
         <div id="compare" class="tab-panel hidden">
               <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 max-w-3xl mx-auto text-center">
                 <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Compare Two CTC Offers</h3>
-                
+                <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
               </div>
         </div>
         
         <div id="tax" class="tab-panel hidden">
               <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 max-w-3xl mx-auto text-center">
                 <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Tax Calculator (Old vs New)</h3>
-                
+                <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
               </div>
         </div>
 
         <div id="hike" class="tab-panel hidden">
             <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 max-w-3xl mx-auto text-center">
               <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Hike Calculator</h3>
-              
+              <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
             </div>
         </div>
 
         <div id="additional" class="tab-panel hidden">
             <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 max-w-3xl mx-auto text-center">
               <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Additional Calculator</h3>
-             
+              <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
             </div>
         </div>
         
@@ -764,6 +779,8 @@
     
     document.addEventListener('DOMContentLoaded', () => {
         let calculationResults = {};
+        let reverseCalculationResults = {}; // NAYA VARIABLE REVERSE DATA KE LIYE
+
         let salaryChart;
         let reverseSalaryChart;
 
@@ -823,7 +840,7 @@
         const reverseIncludeProfTax = document.getElementById('includeProfTax_reverse');
         const reverseCalcButton = document.getElementById('calculateReverse');
 
-        // --- NEW MOBILE MENU ELEMENTS ---
+        // Mobile Menu Elements
         const tabButtons = document.querySelectorAll('.tab-btn');
         const tabPanels = document.querySelectorAll('.tab-panel');
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
@@ -838,6 +855,9 @@
         // Downloads
         const downloadPdfBtn = document.getElementById('downloadPdf');
         const downloadExcelBtn = document.getElementById('downloadExcel');
+        // NAYE DOWNLOAD BUTTONS
+        const downloadPdfBtn_reverse = document.getElementById('downloadPdf_reverse');
+        const downloadExcelBtn_reverse = document.getElementById('downloadExcel_reverse');
         
 
         // --- Tax Slabs ---
@@ -882,9 +902,8 @@
             }
         });
         
-        // --- (Section 1) Tab Switching & NEW Mobile Menu Logic ---
+        // --- (Section 1) Tab Switching & Mobile Menu Logic ---
 
-        // --- NEW Mobile Menu Toggle Click ---
         if (mobileMenuToggle && mobileMenu) {
           mobileMenuToggle.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
@@ -893,10 +912,11 @@
 
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
-                const targetTab = button.getAttribute('data-tab');
+                const targetTab = button.getAttribute('data-tab') || button.getAttribute('data-tab-target');
+                if (!targetTab) return;
                 
                 // Deactivate all tabs (in header and footer)
-                tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+                document.querySelectorAll('.tab-btn, .footer-tab-btn').forEach(btn => btn.classList.remove('tab-active'));
                 
                 // Hide all panels
                 tabPanels.forEach(panel => panel.classList.add('hidden'));
@@ -904,16 +924,22 @@
                 // Activate clicked button
                 button.classList.add('tab-active');
 
-                // Activate matching header tab (for footer clicks)
+                // Activate matching header tab
                 const matchingHeaderTab = document.querySelector(`header .tab-btn[data-tab="${targetTab}"]`);
                  if(matchingHeaderTab) {
                     matchingHeaderTab.classList.add('tab-active');
+                 }
+                
+                // Activate matching footer tab
+                 const matchingFooterTab = document.querySelector(`.footer-tab-btn[data-tab-target="${targetTab}"]`);
+                 if(matchingFooterTab) {
+                    matchingFooterTab.classList.add('tab-active'); // Not strictly needed, but good for consistency
                  }
 
                 // Show target panel
                 document.getElementById(targetTab).classList.remove('hidden');
 
-                // --- NEW: Close mobile menu on tab click ---
+                // Close mobile menu on tab click
                 if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
                     mobileMenu.classList.add('hidden');
                 }
@@ -1210,6 +1236,8 @@
                     maxCTC = trialCTC;
                 }
             }
+            
+            reverseCalculationResults = finalResults; // DATA KO STORE KIYA
             updateReverseUI(finalResults, targetInHandMonthly);
         }
         
@@ -1333,8 +1361,11 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const { components, grossSalary, employerPF, deductions, netInHandYearly, netInHandMonthly, ctc, taxRegime } = calculationResults;
+            
+            if (!ctc) { alert('Please calculate CTC first.'); return; }
+
             doc.setFontSize(18);
-            doc.text('Salary Breakdown', 105, 20, { align: 'center' });
+            doc.text('Salary Breakdown (CTC to In-hand)', 105, 20, { align: 'center' });
             doc.setFontSize(12);
             doc.text(`Tax Regime: ${taxRegime === 'old' ? 'Old' : 'New'}`, 105, 30, { align: 'center' });
             let y = 45;
@@ -1368,14 +1399,17 @@
             doc.text('Employer EPF:', 20, y); doc.text(f_simple(employerPF), 180, y, { align: 'right' }); y += 8;
             doc.setFont(undefined, 'bold');
             doc.text('Total CTC:', 20, y); doc.text(f_simple(ctc), 180, y, { align: 'right' });
-            doc.save('salary-breakdown.pdf');
+            doc.save('salary-breakdown-ctc-to-inhand.pdf');
         });
         
         downloadExcelBtn.addEventListener('click', () => {
             const { components, grossSalary, employerPF, deductions, netInHandYearly, netInHandMonthly, ctc, taxRegime } = calculationResults;
+            
+            if (!ctc) { alert('Please calculate CTC first.'); return; }
+
             const wb = XLSX.utils.book_new();
             const wsData = [
-                ['Salary Breakdown'], ['Tax Regime', taxRegime], [],
+                ['Salary Breakdown (CTC to In-hand)'], ['Tax Regime', taxRegime], [],
                 ['Summary', 'Amount'], ['Total CTC', ctc], ['Net Annual Salary', netInHandYearly], ['Net Monthly Salary', netInHandMonthly], [],
                 ['Earnings (Annual)', 'Amount'], ['Basic Salary', components.basic], ['HRA', components.hra], ['DA', components.da], ['LTA', components.lta], ['Special Allowance', components.special], ['Performance Bonus', components.bonus], ['Gross Salary', grossSalary], [],
                 ['Deductions (Annual)', 'Amount'], ['Employee EPF', deductions.employeePF], ['Professional Tax', deductions.profTax], ['Income Tax', deductions.totalTax], ['Total Deductions', deductions.total], [],
@@ -1383,7 +1417,75 @@
             ];
             const ws = XLSX.utils.aoa_to_sheet(wsData);
             XLSX.utils.book_append_sheet(wb, ws, 'Salary Breakdown');
-            XLSX.writeFile(wb, 'salary-breakdown.xlsx');
+            XLSX.writeFile(wb, 'salary-breakdown-ctc-to-inhand.xlsx');
+        });
+
+        // --- NAYE DOWNLOAD LISTENERS (REVERSE) ---
+        downloadPdfBtn_reverse.addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const { ctc, taxRegime, components, grossSalary, employerPF, deductions, netInHandYearly, netInHandMonthly } = reverseCalculationResults;
+
+            if (!ctc) { alert('Please calculate a CTC first.'); return; } 
+
+            doc.setFontSize(18);
+            doc.text('Salary Breakdown (In-hand to CTC)', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text(`Tax Regime: ${taxRegime === 'old' ? 'Old' : 'New'}`, 105, 30, { align: 'center' });
+            let y = 45;
+            doc.setFontSize(14); doc.text('Summary', 20, y); y += 10;
+            doc.setFontSize(12);
+            doc.text(`Required Total CTC:`, 20, y); doc.text(f_simple(ctc), 180, y, { align: 'right' }); y += 8;
+            doc.text(`Net Annual Salary:`, 20, y); doc.text(f_simple(netInHandYearly), 180, y, { align: 'right' }); y += 8;
+            doc.text(`Net Monthly Salary:`, 20, y); doc.text(f_simple(netInHandMonthly), 180, y, { align: 'right' }); y += 15;
+            
+            doc.setFontSize(14); doc.text('Earnings (Annual)', 20, y); y += 10;
+            doc.setFontSize(12);
+            doc.text('Basic Salary:', 20, y); doc.text(f_simple(components.basic), 180, y, { align: 'right' }); y += 8;
+            doc.text('HRA:', 20, y); doc.text(f_simple(components.hra), 180, y, { align: 'right' }); y += 8;
+            const otherAllowances = components.da + components.lta + components.special + components.bonus;
+            doc.text('Other Allowances:', 20, y); doc.text(f_simple(otherAllowances), 180, y, { align: 'right' }); y += 8;
+            doc.setFont(undefined, 'bold');
+            doc.text('Gross Salary:', 20, y); doc.text(f_simple(grossSalary), 180, y, { align: 'right' }); y += 15;
+            
+            doc.setFont(undefined, 'normal'); doc.setFontSize(14);
+            doc.text('Deductions (Annual)', 20, y); y += 10;
+            doc.setFontSize(12);
+            doc.text('Employee EPF:', 20, y); doc.text(f_simple(deductions.employeePF), 180, y, { align: 'right' }); y += 8;
+            doc.text('Professional Tax:', 20, y); doc.text(f_simple(deductions.profTax), 180, y, { align: 'right' }); y += 8;
+            doc.text('Income Tax:', 20, y); doc.text(f_simple(deductions.totalTax), 180, y, { align: 'right' }); y += 8;
+            doc.setFont(undefined, 'bold');
+            doc.text('Total Deductions:', 20, y); doc.text(f_simple(deductions.total), 180, y, { align: 'right' }); y += 15;
+            
+            doc.setFont(undefined, 'normal'); doc.setFontSize(14);
+            doc.text('CTC Breakup', 20, y); y += 10;
+            doc.setFontSize(12);
+            doc.text('Gross Salary:', 20, y); doc.text(f_simple(grossSalary), 180, y, { align: 'right' }); y += 8;
+            doc.text('Employer EPF:', 20, y); doc.text(f_simple(employerPF), 180, y, { align: 'right' }); y += 8;
+            doc.setFont(undefined, 'bold');
+            doc.text('Total CTC:', 20, y); doc.text(f_simple(ctc), 180, y, { align: 'right' });
+            
+            doc.save('salary-breakdown-inhand-to-ctc.pdf');
+        });
+
+        downloadExcelBtn_reverse.addEventListener('click', () => {
+            const { ctc, taxRegime, components, grossSalary, employerPF, deductions, netInHandYearly, netInHandMonthly } = reverseCalculationResults;
+
+            if (!ctc) { alert('Please calculate a CTC first.'); return; }
+
+            const wb = XLSX.utils.book_new();
+            const otherAllowances = components.da + components.lta + components.special + components.bonus;
+            
+            const wsData = [
+                ['Salary Breakdown (In-hand to CTC)'], ['Tax Regime', taxRegime], [],
+                ['Summary', 'Amount'], ['Required Total CTC', ctc], ['Net Annual Salary', netInHandYearly], ['Net Monthly Salary', netInHandMonthly], [],
+                ['Earnings (Annual)', 'Amount'], ['Basic Salary', components.basic], ['HRA', components.hra], ['Other Allowances', otherAllowances], ['Gross Salary', grossSalary], [],
+                ['Deductions (Annual)', 'Amount'], ['Employee EPF', deductions.employeePF], ['Professional Tax', deductions.profTax], ['Income Tax', deductions.totalTax], ['Total Deductions', deductions.total], [],
+                ['CTC Breakup', 'Amount'], ['Gross Salary', grossSalary], ['Employer EPF', employerPF], ['Total CTC', ctc]
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Salary Breakdown');
+            XLSX.writeFile(wb, 'salary-breakdown-inhand-to-ctc.xlsx');
         });
         
         // --- (Section 7) Initial Load & Event Listeners ---
@@ -1400,7 +1502,6 @@
             ];
             tab1Inputs.forEach(input => input.addEventListener('input', calculateSalary));  
             
-            // (REVERT) Reverted listener
             taxRegimeInputs.forEach(input => input.addEventListener('change', calculateSalary));
 
             inputModeInputs.forEach(input => input.addEventListener('change', () => {
@@ -1467,11 +1568,6 @@
             });
             
             // --- Footer Link Logic ---
-            // Note: This logic is now handled by the main `tabButtons.forEach` loop
-            // since footer buttons also have the `.tab-btn` class.
-            // We just need to find the old footer loop and remove/replace it.
-
-            // --- Find and replace old footer logic ---
             const footerTabButtons = document.querySelectorAll('.footer-tab-btn');
             footerTabButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
