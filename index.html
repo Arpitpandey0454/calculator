@@ -14,28 +14,72 @@
   <script>
     // Tailwind Config with dark mode enabled
     tailwind.config = {
-      darkMode: 'class', 
+      darkMode: 'class',  
       theme: {
         extend: {
           fontFamily: { inter: ['Inter', 'sans-serif'] },
-          colors: { primary: '#3b82f6', accent: '#8b5cf6' }
+          colors: { 
+            primary: '#3b82f6', 
+            accent: '#8b5cf6',
+            gray: {
+              800: '#1f2937',
+              900: '#111827',
+              950: '#030712'
+            }
+          }
         }
       }
     }
     
     // Dark Mode Initializer
-;(function() {
-  if (localStorage.getItem('theme') === 'dark') { // Only apply dark mode if explicitly saved
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-})();
+    ;(function() {
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
   </script>
   
   <style>
     body {
         font-family: 'Inter', sans-serif;
+    }
+
+    /* --- YEH AAPKA NAYA BACKGROUND STYLE HAI --- */
+    .bg-arpit-gradient {
+        background-image: /* faint top vignette (darkening) */
+        radial-gradient(
+          1200px 300px at 50% 0%,
+          rgba(0, 0, 0, 0.12),
+          transparent 30%
+        ),
+        /* soft diagonal streak for subtle depth */
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.04) 0%,
+          rgba(0, 0, 0, 0.02) 100%
+        ),
+        /* main smooth mint -> blue -> very pale */
+        linear-gradient(
+          90deg,
+          #e8fbf2 0%,
+          #dff4ef 18%,
+          #eaf3ff 55%,
+          #f2f7fb 100%
+        );
+        background-repeat: no-repeat;
+        background-size: cover;
+        /* gentle overall desaturation/softness */
+        filter: saturate(0.98) contrast(0.98);
+    }
+    
+    /* --- DARK MODE BACKGROUND OVERRIDE --- */
+    .dark .bg-arpit-gradient {
+      /* Remove the light gradient image */
+      background-image: none;
+      /* Apply solid dark background color */
+      background-color: #030712; /* gray-950 */
     }
     
     /* Hide number input arrows */
@@ -47,7 +91,7 @@
     input[type=number] {
       -moz-appearance: textfield;
     }
-  
+
     /* --- Improved Slider Styles --- */
     input[type="range"] {
       -webkit-appearance: none;
@@ -107,10 +151,10 @@
     
     /* --- Tab Styles --- */
     .tab-btn {
-        @apply py-3 px-4 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 font-medium transition-all;
+        @apply py-2 px-3 sm:px-4 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-700/80 font-medium transition-all text-sm;
     }
     .tab-btn.tab-active {
-        @apply font-semibold text-teal-600 dark:text-teal-400 border-b-2 border-teal-600 dark:border-teal-400;
+        @apply font-semibold text-teal-800 dark:text-teal-100 bg-white dark:bg-gray-900 shadow-md;
     }
     
     /* --- Modal Styles --- */
@@ -138,21 +182,35 @@
     .close-modal:hover { color: #374151; } /* text-gray-700 */
     .dark .close-modal:hover { color: #fff; }
 
+    /* Header glassmorphism on scroll */
+    header {
+      transition: background-color 240ms ease, backdrop-filter 240ms ease, box-shadow 240ms ease, padding 200ms ease;
+    }
+    header.scrolled {
+      background-color: rgba(255,255,255,0.45);
+      backdrop-filter: blur(12px) saturate(125%);
+      -webkit-backdrop-filter: blur(12px) saturate(125%);
+      box-shadow: 0 8px 32px rgba(2,6,23,0.08);
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+    .dark header.scrolled {
+      background-color: rgba(17,24,39,0.35); /* gray-900 @ 35% */
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 8px 32px rgba(2,6,23,0.16);
+    }
+
   </style>
 </head>
 
-<body class="bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+<body class="min-h-screen bg-arpit-gradient text-gray-800 dark:text-gray-200 transition-colors duration-300">
   
-  <div class="absolute top-0 left-0 w-96 h-96 bg-blue-200 dark:bg-blue-900/50 rounded-full filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-  <div class="absolute bottom-0 right-0 w-96 h-96 bg-teal-200 dark:bg-teal-900/50 rounded-full filter blur-3xl opacity-30 translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
-
-  <header class="fixed w-full top-0 left-0 z-50 backdrop-blur-xl bg-white/50 dark:bg-gray-900/50 border-b border-gray-200/80 dark:border-white/10">
-    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+<header class="fixed w-full top-0 left-0 z-50 border-b border-gray-200/80 dark:border-white/10">
+    <div class="max-w-5xl mx-auto flex justify-between items-center px-6 py-4">
         <h1 class="text-2xl font-bold bg-gradient-to-r from-teal-500 to-blue-500 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
-            💰 CTC Calculator 
+            💰 CTC Calculator  
         </h1>
-
-        
 
         <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
             <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,33 +227,33 @@
         <button class="tab-btn" data-tab="inhand-to-ctc">In-hand → CTC</button>
         <button class="tab-btn" data-tab="compare">Compare Offers</button>
         <button class="tab-btn" data-tab="tax">Tax Calculator</button>
-         <button class="tab-btn" data-tab="tax">Hike Calculator</button>
-          <button class="tab-btn" data-tab="tax">Additional Calculator</button>
+                <button class="tab-btn" data-tab="hike">Hike Calculator</button>
+                        <button class="tab-btn" data-tab="additional">Additional Calculator</button>
     </div>
   </header>
 
-  <main class="container mx-auto px-4 py-8 relative z-10 pt-40">
+  <main class="container mx-auto px-4 py-8 relative z-10 pt-48">
 
     <div id="tab-content">
     
         <div id="ctc-to-inhand" class="tab-panel">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             
-                <div class="bg-transparent dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
                     
                     <div>
-                      <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Enter your Annual CTC</label>
-                      <div class="flex items-center space-x-4">
-                        <div class="flex-1">
-                          <input type="range" id="ctcSlider" min="100000" max="10000000" step="10000" value="1000000" class="w-full" />
+                        <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Enter your Annual CTC</label>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-1">
+                            <input type="range" id="ctcSlider" min="100000" max="10000000" step="10000" value="1000000" class="w-full" />
+                            </div>
+                            <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full min-w-[130px] px-4 py-2">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
+                            <input type="number" id="ctcInputBox" 
+                                    class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none" 
+                                    value="1000000" step="10000" min="100000" max="10000000">
+                            </div>
                         </div>
-                        <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full min-w-[130px] px-4 py-2">
-                          <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
-                          <input type="number" id="ctcInputBox" 
-                                 class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none" 
-                                 value="1000000" step="10000" min="100000" max="10000000">
-                        </div>
-                      </div>
                     </div>
                     
                     <hr class="border-gray-200/80 dark:border-gray-700/80">
@@ -243,30 +301,30 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="basicInput">Basic <span class="component-label font-bold ml-1">(%)</span></label>
-                                <input type="number" id="basicInput" value="40" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center space-x-4">
+                                <label for="basicInput" class="text-sm text-gray-600 dark:text-gray-400">Basic <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="basicInput" value="40" class="w-28 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 text-right focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
                             </div>
-                             <div>
-                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="hraInput">HRA <span class="component-label font-bold ml-1">(%)</span></label>
-                                <input type="number" id="hraInput" value="20" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            <div class="flex justify-between items-center space-x-4">
+                                <label for="hraInput" class="text-sm text-gray-600 dark:text-gray-400">HRA <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="hraInput" value="40" readonly title="HRA = 40% of Basic (fixed)" class="w-28 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 text-right focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
                             </div>
-                            <div>
-                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="daInput">DA <span class="component-label font-bold ml-1">(%)</span></label>
-                                <input type="number" id="daInput" value="10" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            <div class="flex justify-between items-center space-x-4">
+                                <label for="daInput" class="text-sm text-gray-600 dark:text-gray-400">DA <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="daInput" value="10" class="w-28 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 text-right focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
                             </div>
-                             <div>
-                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="ltaInput">LTA <span class="component-label font-bold ml-1">(%)</span></label>
-                                <input type="number" id="ltaInput" value="5" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            <div class="flex justify-between items-center space-x-4">
+                                <label for="ltaInput" class="text-sm text-gray-600 dark:text-gray-400">LTA <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="ltaInput" value="5" class="w-28 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 text-right focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
                             </div>
-                             <div>
-                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="bonusInput">Bonus <span class="component-label font-bold ml-1">(%)</span></label>
-                                <input type="number" id="bonusInput" value="10" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                            <div class="flex justify-between items-center space-x-4">
+                                <label for="bonusInput" class="text-sm text-gray-600 dark:text-gray-400">Bonus <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="bonusInput" value="10" class="w-28 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 text-right focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
                             </div>
-                            <div>
-                                <label class="block text-sm mb-1 text-gray-600 dark:text-gray-400" for="specialInput">Special <span class="component-label font-bold ml-1">(%)</span></label>
-                                <input type="number" id="specialInput" value="15" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 opacity-70 cursor-not-allowed" readonly>
+                            <div class="flex justify-between items-center space-x-4">
+                                <label for="specialInput" class="text-sm text-gray-600 dark:text-gray-400">Special <span class="component-label font-bold ml-1">(%)</span></label>
+                                <input type="number" id="specialInput" value="15" class="w-28 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 opacity-70 cursor-not-allowed" readonly>
                             </div>
                         </div>
                     </div>
@@ -274,23 +332,48 @@
                     <hr class="border-gray-200/80 dark:border-gray-700/80">
 
                     <div class="space-y-3">
-                         <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Deductions & Benefits</h3>
-                         <label class="flex items-center cursor-pointer">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Deductions & Benefits</h3>
+                        <label class="flex items-center cursor-pointer">
                             <input type="checkbox" id="includePF" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
                             <span class="ml-2 text-gray-700 dark:text-gray-300">EPF Applicable</span>
-                         </label>
-                         <label class="flex items-center cursor-pointer">
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="includeGratuity" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                            <span class="ml-2 text-gray-700 dark:text-gray-300">Gratuity (4.81% of Basic)</span>
+                        </label>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="includeInsurance" class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                                <span class="ml-2 text-gray-700 dark:text-gray-300">Insurance (fixed)</span>
+                            </label>
+                            <input type="number" id="insuranceAmount" value="12000" class="w-32 text-sm bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200">
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="includeOtherDeductions" class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                                <span class="ml-2 text-gray-700 dark:text-gray-300">Other Deductions (Employer)</span>
+                            </label>
+                            <input type="number" id="otherDeductionsAmount" value="0" class="w-32 text-sm bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200">
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="includeNps" class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                                <span class="ml-2 text-gray-700 dark:text-gray-300">NPS (Employee)</span>
+                            </label>
+                            <input type="number" id="npsPercent" value="0" min="0" max="12" class="w-20 text-sm bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200">%
+                        </div>
+                        <label class="flex items-center cursor-pointer">
                             <input type="checkbox" id="includeProfTax" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
                             <span class="ml-2 text-gray-700 dark:text-gray-300">Professional Tax</span>
-                         </label>
+                        </label>
                     </div>
 
                 </div>
 
-                <div class="bg-transparent dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
                     <h2 id="regimeTitle" class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Salary Breakdown</h2>
                     
-                    <div class="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg text-center">
+                    <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center">
                         <p class="text-center text-gray-600 dark:text-gray-400 text-sm">Net Monthly Salary</p>
                         <h3 class="text-3xl font-bold text-center text-teal-600 dark:text-teal-400" id="monthlyInHand">₹0</h3>
                         <p class="text-center text-gray-500 dark:text-gray-500 text-sm mt-2">Net Annual: <span id="netYearly" class="font-medium text-gray-600 dark:text-gray-400">₹0</span></p>
@@ -327,13 +410,17 @@
                     </div>
                 </div>
 
-                <div class="bg-transparent dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
                     
                     <div>
                         <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Deductions (Annual)</h3>
                         <div class="space-y-2 text-sm" id="deductionsBreakdown">
                             <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">EPF (Employee)</span> <span id="epfEmployee" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
                             <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">EPF (Employer)</span> <span id="epfEmployer" class="text-gray-800 dark:text-gray-200 font-medium">₹0</span></div>
+                                <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gratuity (Employer)</span> <span id="gratuityEmployer" class="text-gray-800 dark:text-gray-200 font-medium">₹0</span></div>
+                                <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Insurance (Employer)</span> <span id="insuranceEmployer" class="text-gray-800 dark:text-gray-200 font-medium">₹0</span></div>
+                                <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Other Deductions (Employer)</span> <span id="otherEmployerDeduction" class="text-gray-800 dark:text-gray-200 font-medium">₹0</span></div>
+                                <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">NPS (Employee)</span> <span id="npsDeduction" class="text-red-400">₹0</span></div>
                             <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Professional Tax</span> <span id="profTaxAmount" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-600 dark:text-gray-400">Income Tax</span>
@@ -352,9 +439,11 @@
 
                     <div>
                         <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Cost to Company Breakup</h3>
-                        <div class="space-y-2 text-sm bg-gray-100 dark:bg-gray-900/50 p-3 rounded-lg">
+                        <div class="space-y-2 text-sm bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
                             <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gross Salary</span> <span id="grossSalaryCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
                             <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Employer EPF</span> <span id="employerEpfCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gratuity (Employer)</span> <span id="gratuityEmployerCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Insurance (Employer)</span> <span id="insuranceEmployerCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
                             <div class="flex justify-between font-bold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
                                 <span>Total CTC</span> <span id="totalCtc">₹0</span>
                             </div>
@@ -364,8 +453,8 @@
                     <hr class="border-gray-200/80 dark:border-gray-700/80">
 
                     <div>
-                         <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Download Report</h3>
-                         <div class="grid grid-cols-2 gap-4">
+                        <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Download Report</h3>
+                        <div class="grid grid-cols-2 gap-4">
                             <button id="downloadPdf" class="flex items-center justify-center bg-teal-600 text-white px-4 py-3 rounded-lg hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 font-semibold transition-all">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                 PDF
@@ -381,23 +470,23 @@
         </div>
         
         <div id="inhand-to-ctc" class="tab-panel hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-                <div class="bg-white/60 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Calculate CTC from In-hand</h2>
                     
                     <div>
-                      <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Desired Net Monthly In-hand</label>
-                      <div class="flex items-center space-x-4">
-                        <div class="flex-1">
-                          <input type="range" id="monthlyInHandSlider" min="10000" max="500000" step="1000" value="70000" class="w-full" />
+                        <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Desired Net Monthly In-hand</label>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-1">
+                            <input type="range" id="monthlyInHandSlider" min="10000" max="500000" step="1000" value="70000" class="w-full" />
+                            </div>
+                            <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full min-w-[130px] px-4 py-2">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
+                            <input type="number" id="monthlyInHandInputBox" 
+                                    class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none" 
+                                    value="70000" step="1000" min="10000" max="500000">
+                            </div>
                         </div>
-                        <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full min-w-[130px] px-4 py-2">
-                          <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
-                          <input type="number" id="monthlyInHandInputBox" 
-                                 class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none" 
-                                 value="70000" step="1000" min="10000" max="500000">
-                        </div>
-                      </div>
                     </div>
                     
                     <hr class="border-gray-200/80 dark:border-gray-700/80">
@@ -431,28 +520,29 @@
                     <hr class="border-gray-200/80 dark:border-gray-700/80">
 
                     <div class="space-y-3">
-                         <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Assumed Deductions</h3>
-                         <label class="flex items-center cursor-pointer">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Assumed Deductions</h3>
+                        <label class="flex items-center cursor-pointer">
                             <input type="checkbox" id="includePF_reverse" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
                             <span class="ml-2 text-gray-700 dark:text-gray-300">EPF Applicable</span>
-                         </label>
-                         <label class="flex items-center cursor-pointer">
+                        </label>
+                        <label class="flex items-center cursor-pointer">
                             <input type="checkbox" id="includeProfTax_reverse" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
                             <span class="ml-2 text-gray-700 dark:text-gray-300">Professional Tax</span>
-                         </label>
+                        </label>
                     </div>
 
                     <button id="calculateReverse" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-full transition-colors duration-200 shadow-lg">
-                      Calculate Required CTC
+                        Calculate Required CTC
                     </button>
                 </div>
                 
                 <div id="reverseResultCard" class="lg:col-span-2 hidden">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white/60 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
+                        
+                        <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
                             <h2 id="reverseRegimeTitle" class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Required CTC Breakdown</h2>
                             
-                            <div class="bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg text-center">
+                            <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center">
                                 <p class="text-center text-gray-600 dark:text-gray-400 text-sm">Required Annual CTC</p>
                                 <h3 class="text-3xl font-bold text-center text-blue-600 dark:text-blue-400" id="calculatedCTC">₹0</h3>
                                 <p class="text-center text-gray-500 dark:text-gray-500 text-sm mt-2">Gives Net Monthly: <span id="calculatedMonthlyInHand" class="font-medium text-gray-600 dark:text-gray-400">₹0</span></p>
@@ -462,7 +552,7 @@
                             
                             <div>
                                 <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Cost to Company Breakup</h3>
-                                <div class="space-y-2 text-sm bg-gray-100 dark:bg-gray-900/50 p-3 rounded-lg">
+                                <div class="space-y-2 text-sm bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
                                     <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gross Salary</span> <span id="reverse_grossSalaryCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
                                     <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Employer EPF</span> <span id="reverse_employerEpfCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
                                     <div class="flex justify-between font-bold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
@@ -472,8 +562,8 @@
                             </div>
                         </div>
                         
-                        <div class="bg-transparent dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8 space-y-6">
-                             <div>
+                        <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
+                            <div>
                                 <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Earnings Breakdown (Annual)</h3>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Basic Salary</span> <span id="reverse_basicAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
@@ -506,22 +596,100 @@
         </div>
         
         <div id="compare" class="tab-panel hidden">
-             <div class="bg-white/60 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-8 max-w-3xl mx-auto text-center">
+              <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-8 max-w-3xl mx-auto text-center">
                 <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Compare Two CTC Offers</h3>
-               
-             </div>
+                <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
+              </div>
         </div>
         
         <div id="tax" class="tab-panel hidden">
-             <div class="bg-white/60 dark:bg-gray-800/50 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 p-8 max-w-3xl mx-auto text-center">
+              <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-8 max-w-3xl mx-auto text-center">
                 <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Tax Calculator (Old vs New)</h3>
-                
-             </div>
+                <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
+              </div>
+        </div>
+
+        <div id="hike" class="tab-panel hidden">
+            <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-8 max-w-3xl mx-auto text-center">
+              <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Hike Calculator</h3>
+              <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
+            </div>
+        </div>
+
+        <div id="additional" class="tab-panel hidden">
+            <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-8 max-w-3xl mx-auto text-center">
+              <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Additional Calculator</h3>
+              <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
+            </div>
         </div>
         
     </div>
   </main>
+
+  <section class="max-w-5xl mx-auto px-4 py-16 space-y-12">
+    <div>
+        <h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">About the CTC Calculator</h2>
+        <div class="text-gray-700 dark:text-gray-300 space-y-4">
+            <p>This calculator helps you understand the breakdown of your Cost to Company (CTC) and estimate your in-hand salary. It accounts for common deductions like Employee Provident Fund (EPF), Professional Tax, and Income Tax under both the Old and New Tax Regimes.</p>
+            <p>Please note that this is an estimation tool. The final salary and tax calculations may vary based on your company's specific policies and your complete financial profile. It's always a good idea to consult with a financial advisor for exact figures.</p>
+        </div>
+    </div>
+    
+    <div>
+        <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Frequently Asked Questions (FAQ)</h2>
+        <div class="space-y-6">
+            <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-2xl border border-gray-200/50 dark:border-gray-800 p-6">
+                <h3 class="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">1. What is CTC (Cost to Company)?</h3>
+                <p class="text-gray-700 dark:text-gray-300">CTC stands for 'Cost to Company'. It is the total amount that a company spends on an employee, directly or indirectly. It includes your gross salary, employer's contribution to EPF, gratuity (if applicable), and any other benefits.</p>
+            </div>
+            <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-2xl border border-gray-200/50 dark:border-gray-800 p-6">
+                <h3 class="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">2. What is the difference between Old and New Tax Regime?</h3>
+                <p class="text-gray-700 dark:text-gray-300">The New Tax Regime offers lower income tax slabs but disallows most common deductions. The Old Tax Regime has higher tax slabs but allows you to claim exemptions like HRA, LTA, and deductions under Section 80C (like EPF), which are factored into this calculator.</p>
+            </div>
+            <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-2xl border border-gray-200/50 dark:border-gray-800 p-6">
+                <h3 class="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">3. How is EPF calculated?</h3>
+                <p class="text-gray-700 dark:text-gray-300">Employee Provident Fund (EPF) is typically calculated as 12% of your Basic Salary. An equal amount is contributed by your employer. Your contribution (12%) is deducted from your salary and is eligible for tax deduction under Section 80C in the Old Regime.</p>
+            </div>
+        </div>
+    </div>
+  </section>
   
+  <footer class="border-t border-gray-300 dark:border-gray-800 mt-16">
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="font-semibold mb-3 text-gray-900 dark:text-gray-100">Calculators</h4>
+                <ul class="space-y-2">
+                    <li><button class="footer-tab-btn text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500" data-tab-target="ctc-to-inhand">CTC → In-hand</button></li>
+                    <li><button class="footer-tab-btn text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500" data-tab-target="inhand-to-ctc">In-hand → CTC</button></li>
+                    <li><button class="footer-tab-btn text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500" data-tab-target="compare">Compare Offers</button></li>
+                    <li><button class="footer-tab-btn text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500" data-tab-target="tax">Tax Calculator</button></li>
+                    <li><button class="footer-tab-btn text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500" data-tab-target="hike">Hike Calculator</button></li>
+                    <li><button class="footer-tab-btn text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500" data-tab-target="additional">Additional Calculator</button></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-3 text-gray-900 dark:text-gray-100">Resources</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500">About Us</a></li>
+                    <li><a href="#" class="text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500">Blog</a></li>
+                    <li><a href="#" class="text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-3 text-gray-900 dark:text-gray-100">Legal</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500">Privacy Policy</a></li>
+                    <li><a href="#" class="text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-12 border-t border-gray-200/80 dark:border-gray-700/50 pt-8 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">&copy; 2025 CTC Calculator. All rights reserved.</p>
+        </div>
+    </div>
+  </footer>
+
   <div id="taxDetailsModal" class="modal">
       <div class="modal-content">
           <span class="close-modal">&times;</span>
@@ -553,7 +721,6 @@
   <script>
     // --- (Global) Helper Functions ---
     
-    // Format number to Indian currency (with K, L, Cr)
     function formatIndianCurrency(num) {
       num = Math.round(num);
       const units = Math.abs(num) >= 1e7 ? Math.abs(num) / 1e7 : Math.abs(num) >= 1e5 ? Math.abs(num) / 1e5 : Math.abs(num) >= 1e3 ? Math.abs(num) / 1e3 : Math.abs(num);
@@ -562,23 +729,20 @@
       } else if (Math.abs(num) >= 1e5) {
         return '₹ ' + units.toFixed(2) + ' L';
       } else if (Math.abs(num) >= 1e3) {
-         return '₹ ' + units.toFixed(0) + ' K';
+          return '₹ ' + units.toFixed(0) + ' K';
       }
       return '₹ ' + num.toLocaleString('en-IN');
     }
     
-    // Simple version for non-K/L/Cr values
     const f_simple = (val) => `₹${Math.round(val).toLocaleString('en-IN')}`;
     const neg_f_simple = (val) => `-₹${Math.round(val).toLocaleString('en-IN')}`;
 
 
-    // Update slider background gradient
     function updateSliderBackground(slider) {
       const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
       slider.style.setProperty('--value', value + '%');
     }
     
-    // Get Chart color based on theme
     function getChartLabelColor() {
         if (document.documentElement.classList.contains('dark')) {
             return '#d1d5db'; // gray-300
@@ -591,20 +755,45 @@
     document.addEventListener('DOMContentLoaded', () => {
         let calculationResults = {};
         let salaryChart;
-        let reverseSalaryChart; // <-- JS CHANGE 1: Add new chart variable
+        let reverseSalaryChart;
 
         // --- Get All DOM Elements ---
         
-        // Theme
         const themeToggle = document.getElementById('theme-toggle');
         const lightIcon = document.getElementById('theme-icon-light');
         const darkIcon = document.getElementById('theme-icon-dark');
+        const headerEl = document.querySelector('header');
+
+        // Toggle glassmorphism class on scroll
+        function handleHeaderOnScroll() {
+            try {
+                if (window.scrollY > 20) {
+                    headerEl.classList.add('scrolled');
+                } else {
+                    headerEl.classList.remove('scrolled');
+                }
+            } catch (e) {
+                // defensive: if header not present, silently ignore
+                console.warn('Header scroll handler error', e);
+            }
+        }
+        window.addEventListener('scroll', handleHeaderOnScroll, { passive: true });
+        // initialize state
+        handleHeaderOnScroll();
+
         
-        // Tab 1 (CTC -> In-hand)
+    // Tab 1 (CTC -> In-hand)
         const ctcSlider = document.getElementById('ctcSlider');
         const ctcInputBox = document.getElementById('ctcInputBox');
         const includePF = document.getElementById('includePF');
         const includeProfTax = document.getElementById('includeProfTax');
+    const includeGratuity = document.getElementById('includeGratuity');
+    const includeInsurance = document.getElementById('includeInsurance');
+    const insuranceAmount = document.getElementById('insuranceAmount');
+    const includeOtherDeductions = document.getElementById('includeOtherDeductions');
+    const otherDeductionsAmount = document.getElementById('otherDeductionsAmount');
+    const includeNps = document.getElementById('includeNps');
+    const npsPercent = document.getElementById('npsPercent');
         const locationSelect = document.getElementById('location');
         const basicInput = document.getElementById('basicInput');
         const hraInput = document.getElementById('hraInput');
@@ -670,7 +859,6 @@
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
             updateThemeIcon();
             
-            // <-- JS CHANGE 2: Update BOTH charts on theme change -->
             if (salaryChart) {
                 salaryChart.options.plugins.legend.labels.color = getChartLabelColor();
                 salaryChart.update();
@@ -703,7 +891,8 @@
 
             if (mode === 'percentage') {
                 basicInput.value = 40;
-                hraInput.value = 20;
+                // HRA default: 40% of Basic (per requirement)
+                hraInput.value = 40;
                 daInput.value = 10;
                 ltaInput.value = 5;
                 bonusInput.value = 10;
@@ -711,7 +900,9 @@
             } else {
                 const ctc = parseFloat(ctcSlider.value) || 0;
                 basicInput.value = (ctc * 0.40).toFixed(0);
-                hraInput.value = (ctc * 0.20).toFixed(0);
+                // hra amount = 40% of basic
+                const basicAmount = (ctc * 0.40);
+                hraInput.value = Math.round(basicAmount * 0.40);
                 daInput.value = (ctc * 0.10).toFixed(0);
                 ltaInput.value = (ctc * 0.05).toFixed(0);
                 bonusInput.value = (ctc * 0.10).toFixed(0);
@@ -721,57 +912,51 @@
 
         // Main calculation function
         function calculateSalary() {
-            const ctc = parseFloat(ctcSlider.value) || 0; 
+            const ctc = parseFloat(ctcSlider.value) || 0;  
             const inputMode = document.querySelector('input[name="inputMode"]:checked').value;
             const taxRegime = document.querySelector('input[name="taxRegime"]:checked').value;
             const location = locationSelect.value;
-            let employerPF = 0, tempBasic = 0;
+            // Basic: percent of CTC or absolute
+            const basic = (inputMode === 'percentage') ? ctc * (parseFloat(basicInput.value) / 100) : parseFloat(basicInput.value || 0);
 
-            if (includePF.checked) {
-                if (inputMode === 'percentage') {
-                    tempBasic = ctc * (parseFloat(basicInput.value) / 100);
-                } else {
-                    tempBasic = parseFloat(basicInput.value);
-                }
-                employerPF = tempBasic * 0.12;
-            }
-            const grossSalary = ctc - employerPF;
+            // HRA: 40% of Basic (fixed rule)
+            const hra = basic * 0.40;
 
-            let components = {};
+            // Allowances DA/LTA/Bonus based on input mode (percentage interpreted vs amounts)
+            let da = 0, lta = 0, bonus = 0;
             if (inputMode === 'percentage') {
-                const basicPerc = parseFloat(basicInput.value) || 0;
-                const hraPerc = parseFloat(hraInput.value) || 0;
-                const daPerc = parseFloat(daInput.value) || 0;
-                const ltaPerc = parseFloat(ltaInput.value) || 0;
-                const bonusPerc = parseFloat(bonusInput.value) || 0;
-                const otherSumPerc = basicPerc + hraPerc + daPerc + ltaPerc + bonusPerc;
-                const specialPerc = Math.max(0, 100 - otherSumPerc);
-                specialInput.value = specialPerc.toFixed(1);
-                components = {
-                    basic: grossSalary * (basicPerc / 100),
-                    hra: grossSalary * (hraPerc / 100),
-                    da: grossSalary * (daPerc / 100),
-                    lta: grossSalary * (ltaPerc / 100),
-                    bonus: grossSalary * (bonusPerc / 100),
-                    special: grossSalary * (specialPerc / 100)
-                };
+                da = ctc * ((parseFloat(daInput.value) || 0) / 100);
+                lta = ctc * ((parseFloat(ltaInput.value) || 0) / 100);
+                bonus = ctc * ((parseFloat(bonusInput.value) || 0) / 100);
             } else {
-                components.basic = parseFloat(basicInput.value) || 0;
-                components.hra = parseFloat(hraInput.value) || 0;
-                components.da = parseFloat(daInput.value) || 0;
-                components.lta = parseFloat(ltaInput.value) || 0;
-                components.bonus = parseFloat(bonusInput.value) || 0;
-                const otherSum = components.basic + components.hra + components.da + components.lta + components.bonus;
-                components.special = Math.max(0, grossSalary - otherSum);
-                specialInput.value = components.special.toFixed(0);
+                da = parseFloat(daInput.value) || 0;
+                lta = parseFloat(ltaInput.value) || 0;
+                bonus = parseFloat(bonusInput.value) || 0;
             }
 
-            const employeePF = includePF.checked ? components.basic * 0.12 : 0;
+            // Employer side contributions (part of CTC)
+            const employerPF = includePF.checked ? basic * 0.12 : 0;
+            const employerGratuity = includeGratuity.checked ? basic * 0.0481 : 0;
+            const insuranceEmployer = includeInsurance.checked ? (parseFloat(insuranceAmount.value) || 0) : 0;
+            const otherEmployer = includeOtherDeductions.checked ? (parseFloat(otherDeductionsAmount.value) || 0) : 0;
+
+            // Special allowance per user formula: CTC – (Basic + HRA + Employer PF + Gratuity + Insurance + Other Deductions)
+            const special = Math.max(0, ctc - (basic + hra + employerPF + employerGratuity + insuranceEmployer + otherEmployer));
+
+            const components = { basic, hra, da, lta, bonus, special };
+
+            // Employee side deductions
+            const employeePF = includePF.checked ? basic * 0.12 : 0;
+            const npsDeduction = includeNps.checked ? Math.min(((parseFloat(npsPercent.value) || 0) / 100) * basic, 0.12 * basic) : 0;
             let profTax = 0;
             if (includeProfTax.checked) {
                 const rates = { 'TN': 2500, 'KA': 2400, 'MH': 2500, 'DL': 2400 };
                 profTax = rates[location] || 0;
             }
+            // Gross salary computed as sum of components (should align with CTC - employer contributions)
+            const grossSalary = components.basic + components.hra + components.da + components.lta + components.bonus + components.special;
+            
+            // (CHANGE) Using 75000, standard deduction for tax purposes
             const standardDeduction = 75000;
             let taxableIncome = grossSalary;
             let taxDetails = {};
@@ -779,25 +964,33 @@
             if (taxRegime === 'old') {
                 const hraExemption = Math.min(components.hra, (components.basic + components.da) * 0.50);
                 const ltaExemption = components.lta;
+                
+                // (REVERT) Reverted to original logic: 80C is only EPF, capped at 1.5L
                 const section80C = Math.min(employeePF, 150000);
+
                 taxableIncome -= (standardDeduction + hraExemption + ltaExemption + section80C + profTax);
+                
                 taxDetails = calculateTax(taxableIncome, oldTaxSlabs);
+                // Rebate u/s 87A
                 if (taxableIncome <= 500000) taxDetails.finalTax = Math.max(0, taxDetails.finalTax - 12500);
-            } else {
+            
+            } else { // New Regime
+                // New regime also gets standard deduction
                 taxableIncome -= (standardDeduction + profTax);
                 taxDetails = calculateTax(taxableIncome, newTaxSlabs);
+                // Rebate u/s 87A
                 if (taxableIncome <= 700000) taxDetails.finalTax = 0;
             }
 
             taxableIncome = Math.max(0, taxableIncome);
             const totalTax = taxDetails.finalTax;
-            const totalDeductions = employeePF + profTax + totalTax;
+            const totalDeductions = employeePF + npsDeduction + profTax + totalTax;
             const netInHandYearly = grossSalary - totalDeductions;
             const netInHandMonthly = netInHandYearly / 12;
 
             calculationResults = {
-                ctc, taxRegime, components, grossSalary, employerPF,
-                deductions: { employeePF, profTax, totalTax, total: totalDeductions },
+                ctc, taxRegime, components, grossSalary, employerPF, employerGratuity, insuranceEmployer, otherEmployer,
+                deductions: { employeePF, npsDeduction, profTax, totalTax, total: totalDeductions },
                 taxCalc: { taxableIncome, standardDeduction, ...taxDetails },
                 netInHandYearly, netInHandMonthly
             };
@@ -850,6 +1043,13 @@
             document.getElementById('taxableIncome').textContent = f_simple(taxCalc.taxableIncome);
             document.getElementById('epfEmployee').textContent = neg_f_simple(deductions.employeePF);
             document.getElementById('epfEmployer').textContent = f_simple(employerPF);
+            // Employer gratuity/insurance/other displays
+            if (document.getElementById('gratuityEmployer')) document.getElementById('gratuityEmployer').textContent = f_simple(results.employerGratuity || 0);
+            if (document.getElementById('gratuityEmployerCtc')) document.getElementById('gratuityEmployerCtc').textContent = f_simple(results.employerGratuity || 0);
+            if (document.getElementById('insuranceEmployer')) document.getElementById('insuranceEmployer').textContent = f_simple(results.insuranceEmployer || 0);
+            if (document.getElementById('insuranceEmployerCtc')) document.getElementById('insuranceEmployerCtc').textContent = f_simple(results.insuranceEmployer || 0);
+            if (document.getElementById('otherEmployerDeduction')) document.getElementById('otherEmployerDeduction').textContent = f_simple(results.otherEmployer || 0);
+            if (document.getElementById('npsDeduction')) document.getElementById('npsDeduction').textContent = neg_f_simple(deductions.npsDeduction || 0);
             document.getElementById('profTaxAmount').textContent = neg_f_simple(deductions.profTax);
             document.getElementById('incomeTax').textContent = neg_f_simple(deductions.totalTax);
             document.getElementById('deductionsYearly').textContent = neg_f_simple(deductions.total);
@@ -900,7 +1100,6 @@
             salaryChart.update();
         }
         
-        // <-- JS CHANGE 3: Add functions for the new reverse chart -->
         function initializeReverseChart() {
             const ctx = document.getElementById('reverseSalaryChart').getContext('2d');
             reverseSalaryChart = new Chart(ctx, {
@@ -974,7 +1173,6 @@
             updateReverseUI(finalResults, targetInHandMonthly);
         }
         
-        // Helper for reverse calculation (uses standard 40/20/10/5/10/15 split)
         function calculateInHandFromCTC(trialCTC, params) {
             const { taxRegime, location, pf, profTax } = params;
             const basicPerc = 40, hraPerc = 20, daPerc = 10, ltaPerc = 5, bonusPerc = 10, specialPerc = 15;
@@ -1001,7 +1199,7 @@
                 professionalTax = rates[location] || 0;
             }
             
-            const standardDeduction = 75000;
+            const standardDeduction = 50000;
             let taxableIncome = grossSalary;
             let taxDetails = {};
             
@@ -1031,7 +1229,6 @@
             };
         }
         
-        // Update UI for Tab 2
         function updateReverseUI(results, targetInHand) {
             const { ctc, taxRegime, components, grossSalary, employerPF, deductions, netInHandMonthly } = results;
             
@@ -1055,7 +1252,6 @@
             document.getElementById('reverse_employerEpfCtc').textContent = f_simple(employerPF);
             document.getElementById('reverse_totalCtc').textContent = f_simple(ctc);
             
-            // <-- JS CHANGE 4: Update the reverse chart -->
             updateReverseChart(results);
         }
 
@@ -1142,7 +1338,7 @@
                 ['Salary Breakdown'], ['Tax Regime', taxRegime], [],
                 ['Summary', 'Amount'], ['Total CTC', ctc], ['Net Annual Salary', netInHandYearly], ['Net Monthly Salary', netInHandMonthly], [],
                 ['Earnings (Annual)', 'Amount'], ['Basic Salary', components.basic], ['HRA', components.hra], ['DA', components.da], ['LTA', components.lta], ['Special Allowance', components.special], ['Performance Bonus', components.bonus], ['Gross Salary', grossSalary], [],
-                ['Deductions (Annual)', 'Amount'], ['Employee EPF', deductions.employeePF], ['Professional Tax', deductions.profTax], ['Income Tax', deductions.totalTax], ['Total DeduCTIONS', deductions.total], [],
+                ['Deductions (Annual)', 'Amount'], ['Employee EPF', deductions.employeePF], ['Professional Tax', deductions.profTax], ['Income Tax', deductions.totalTax], ['Total Deductions', deductions.total], [],
                 ['CTC Breakup', 'Amount'], ['Gross Salary', grossSalary], ['Employer EPF', employerPF], ['Total CTC', ctc]
             ];
             const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -1157,17 +1353,23 @@
             // --- Tab 1 Listeners ---
             const tab1Inputs = [
                 includePF, includeProfTax, locationSelect,
-                basicInput, hraInput, daInput, ltaInput, bonusInput
+                basicInput, hraInput, daInput, ltaInput, bonusInput,
+                includeGratuity, includeInsurance, insuranceAmount,
+                includeOtherDeductions, otherDeductionsAmount,
+                includeNps, npsPercent
             ];
-            tab1Inputs.forEach(input => input.addEventListener('input', calculateSalary)); 
+            tab1Inputs.forEach(input => input.addEventListener('input', calculateSalary));  
+            
+            // (REVERT) Reverted listener
             taxRegimeInputs.forEach(input => input.addEventListener('change', calculateSalary));
+
             inputModeInputs.forEach(input => input.addEventListener('change', () => {
                 updateInputLabels();
                 calculateSalary();
             }));
             
             ctcSlider.addEventListener('input', (e) => {
-                ctcInputBox.value = e.target.value; 
+                ctcInputBox.value = e.target.value;  
                 updateSliderBackground(ctcSlider);
                 calculateSalary();
             });
@@ -1179,21 +1381,21 @@
             });
             
             ctcInputBox.addEventListener('change', (e) => {
-                 let value = parseInt(e.target.value);
-                 const min = parseInt(ctcSlider.min);
-                 const max = parseInt(ctcSlider.max);
-                 if (isNaN(value) || value < min) value = min;
-                 if (value > max) value = max;
-                 e.target.value = value;
-                 ctcSlider.value = value;
-                 updateSliderBackground(ctcSlider);
-                 calculateSalary();
+                let value = parseInt(e.target.value);
+                const min = parseInt(ctcSlider.min);
+                const max = parseInt(ctcSlider.max);
+                if (isNaN(value) || value < min) value = min;
+                if (value > max) value = max;
+                e.target.value = value;
+                ctcSlider.value = value;
+                updateSliderBackground(ctcSlider);
+                calculateSalary();
             });
             
             
             // --- Tab 2 Listeners ---
             const tab2Inputs = [
-                reverseLocationSelect, reverseIncludePF, 
+                reverseLocationSelect, reverseIncludePF,  
                 reverseIncludeProfTax
             ];
             tab2Inputs.forEach(input => input.addEventListener('input', handleReverseCalculation));
@@ -1213,36 +1415,45 @@
             });
 
             monthlyInHandInputBox.addEventListener('change', (e) => {
-                 let value = parseInt(e.target.value);
-                 const min = parseInt(monthlyInHandSlider.min);
-                 const max = parseInt(monthlyInHandSlider.max);
-                 if (isNaN(value) || value < min) value = min;
-                 if (value > max) value = max;
-                 e.target.value = value;
-                 monthlyInHandSlider.value = value;
-                 updateSliderBackground(monthlyInHandSlider);
-                 handleReverseCalculation();
+                let value = parseInt(e.target.value);
+                const min = parseInt(monthlyInHandSlider.min);
+                const max = parseInt(monthlyInHandSlider.max);
+                if (isNaN(value) || value < min) value = min;
+                if (value > max) value = max;
+                e.target.value = value;
+                monthlyInHandSlider.value = value;
+                updateSliderBackground(monthlyInHandSlider);
+                handleReverseCalculation();
             });
             
+            // --- Footer Link Logic ---
+            const footerTabButtons = document.querySelectorAll('.footer-tab-btn');
+            footerTabButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const targetTab = e.target.getAttribute('data-tab-target');
+                    const headerButton = document.querySelector(`header .tab-btn[data-tab="${targetTab}"]`);
+                    if (headerButton) {
+                        headerButton.click();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
             // --- Initial Calls ---
-            updateThemeIcon(); // Set correct icon on load
+            updateThemeIcon();
             updateInputLabels();
-            initializeChart(); // Initialize the first chart
+            initializeChart();
             
-            // Update slider backgrounds on load
             updateSliderBackground(ctcSlider);
             updateSliderBackground(monthlyInHandSlider);
             
-            // Update input BOX values on load
             ctcInputBox.value = ctcSlider.value;
             monthlyInHandInputBox.value = monthlyInHandSlider.value;
             
-            // Run initial calculations
             calculateSalary();
-            handleReverseCalculation(); // This will also initialize the reverse chart
+            handleReverseCalculation();
         }
         
-        // Run everything
         initializeCalculator();
     });
   </script>
