@@ -31,7 +31,7 @@
             }
         }
 
-            // Dark Mode Initializer
+        // Dark Mode Initializer
             ; (function () {
                 if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
@@ -66,12 +66,12 @@
             background-repeat: no-repeat;
             background-size: cover;
             /* NOTE: remove filter from this element to avoid creating a new containing block
-                     that breaks `position: fixed` on children (like the header). The visual
-                     filter is applied via a fixed ::before pseudo-element instead. */
+					      that breaks `position: fixed` on children (like the header). The visual
+					      filter is applied via a fixed ::before pseudo-element instead. */
         }
 
         /* Use a fixed pseudo-element to render the background + filter so that
-             `position: fixed` children (header) remain fixed to the viewport. */
+			      `position: fixed` children (header) remain fixed to the viewport. */
         .bg-arpit-gradient::before {
             content: '';
             position: fixed;
@@ -98,43 +98,6 @@
             /* gentle overall desaturation/softness */
             filter: saturate(0.98) contrast(0.98);
             pointer-events: none;
-        }
-
-        /* Scrolled state - enhanced frosted glass effect */
-        header.scrolled {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(232, 251, 242, 0.85) 50%, rgba(234, 243, 255, 0.8) 100%);
-            backdrop-filter: blur(20px) saturate(130%);
-            -webkit-backdrop-filter: blur(20px) saturate(130%);
-            border-bottom: 1px solid rgba(13, 148, 136, 0.1);
-            box-shadow:
-                0 4px 12px rgba(0, 0, 0, 0.1),
-                0 16px 40px rgba(13, 148, 136, 0.12),
-                0 32px 80px rgba(59, 130, 246, 0.06),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            padding: 12px 0;
-
-            /* --- NEW ANIMATION PROPERTIES --- */
-            width: 100% !important;
-            /* Force full width */
-            max-width: 100% !important;
-            /* Override any container limits */
-            top: 0 !important;
-            /* Stick to very top */
-            border-radius: 0 !important;
-            /* Remove rounded corners */
-            left: 0 !important;
-            /* Reset centering positioning */
-            transform: none !important;
-            /* Reset centering transform */
-        }
-
-        /* ... existing header.scrolled styles ... */
-
-        /* --- NEW: Expand inner content when scrolled --- */
-        header.scrolled .max-w-5xl {
-            max-width: 95% !important; /* Expands from 1024px to 95% of screen */
-            padding-left: 0;           /* Optional: Adjust padding if needed */
-            padding-right: 0;
         }
 
         /* --- DARK MODE BACKGROUND OVERRIDE --- */
@@ -372,6 +335,28 @@
                 0 32px 80px rgba(59, 130, 246, 0.06),
                 inset 0 1px 0 rgba(255, 255, 255, 0.9);
             padding: 8px 0;
+            /* --- NEW ANIMATION PROPERTIES --- */
+            width: 100% !important;
+            /* Force full width */
+            max-width: 100% !important;
+            /* Override any container limits */
+            top: 0 !important;
+            /* Stick to very top */
+            border-radius: 0 !important;
+            /* Remove rounded corners */
+            left: 0 !important;
+            /* Reset centering positioning */
+            transform: none !important;
+            /* Reset centering transform */
+        }
+
+        /* --- NEW: Expand inner content when scrolled --- */
+        header.scrolled .max-w-5xl {
+            max-width: 95% !important;
+            /* Expands from 1024px to 95% of screen */
+            padding-left: 0;
+            /* Optional: Adjust padding if needed */
+            padding-right: 0;
         }
 
         /* Dark mode header styling */
@@ -402,6 +387,7 @@
                 0 16px 40px rgba(13, 148, 136, 0.15),
                 0 32px 80px rgba(59, 130, 246, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 12px 0;
         }
 
         /* Header content wrapper with proper z-index */
@@ -648,7 +634,7 @@
 <body class="min-h-screen bg-arpit-gradient text-gray-800 dark:text-gray-200 transition-colors duration-300">
 
     <div class="relative flex justify-center items-center">
-        <header class="fixed w-[70%]  top-0 z-50 border-b border-gray-200/80 dark:border-white/10 rounded-bl-[30px] rounded-br-[30px] transition-all">
+        <header class="fixed w-[70%] top-0 z-50 border-b border-gray-200/80 dark:border-white/10 rounded-bl-[30px] rounded-br-[30px] transition-all">
             <div class="max-w-5xl mx-auto flex justify-between items-center px-6 py-3">
                 <div class="flex items-center gap-3">
                     <img src="logo.png" alt="CTC Calculator Logo" class="h-[80px] w-[80px] object-contain">
@@ -702,7 +688,7 @@
                 </div>
             </nav>
         </header>
-    </div>
+        </div>
     <main class="container mx-auto px-4 py-8 relative z-10 pt-40 sm:pt-48">
 
         <div id="tab-content">
@@ -716,17 +702,17 @@
                         <div>
                             <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Enter your Annual
                                 CTC</label>
-                            <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                                 <div class="w-full sm:flex-1">
-                                    <input type="range" id="ctcSlider" min="100000" max="10000000" step="10000"
-                                        value="1000000" class="w-full" />
-                                </div>
-                                <div
-                                    class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-full sm:w-auto sm:min-w-[130px] px-4 py-2">
-                                    <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
-                                    <input type="number" id="ctcInputBox"
-                                        class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none"
-                                        value="1000000" step="10000" min="100000" max="10000000">
+                                    <div
+                                        class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-full sm:w-auto sm:min-w-[130px] px-4 py-2">
+                                        <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
+                                        <input type="number" id="ctcInputBox"
+                                            class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none"
+                                            value="1000000" step="10000" min="100000" max="10000000">
+                                    </div>
+                                    <p id="ctcInWords" class="mt-2 text-sm text-gray-600 dark:text-gray-400">One million
+                                        rupees</p>
                                 </div>
                             </div>
                         </div>
@@ -1046,17 +1032,17 @@
                         <div>
                             <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Desired Net Monthly
                                 In-hand</label>
-                            <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                                 <div class="w-full sm:flex-1">
-                                    <input type="range" id="monthlyInHandSlider" min="10000" max="500000" step="1000"
-                                        value="70000" class="w-full" />
-                                </div>
-                                <div
-                                    class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-full sm:w-auto sm:min-w-[130px] px-4 py-2">
-                                    <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
-                                    <input type="number" id="monthlyInHandInputBox"
-                                        class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none"
-                                        value="70000" step="1000" min="10000" max="500000">
+                                    <div
+                                        class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-full sm:w-auto sm:min-w-[130px] px-4 py-2">
+                                        <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
+                                        <input type="number" id="monthlyInHandInputBox"
+                                            class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none"
+                                            value="70000" step="1000" min="10000" max="500000">
+                                    </div>
+                                    <p id="monthlyInWords" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                        Seventy thousand rupees</p>
                                 </div>
                             </div>
                         </div>
@@ -1273,51 +1259,100 @@
         </div>
     </main>
 
-    <section class="max-w-5xl mx-auto px-4 py-16 space-y-12">
-        <div>
-            <h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">About the CTC Calculator</h2>
-            <div class="text-gray-700 dark:text-gray-300 space-y-4">
-                <p>This calculator helps you understand the breakdown of your Cost to Company (CTC) and estimate your
+    <section id="about-section" class="max-w-5xl mx-auto px-4 py-20">
+
+        <div class=" mt-20">
+            <h2
+                class="text-4xl font-bold mb-4 bg-gradient-to-r from-teal-700 via-teal-600 to-blue-600 bg-clip-text text-transparent dark:from-teal-200 dark:via-cyan-200 dark:to-blue-200 text-center">
+                About the CTC Calculator
+            </h2>
+            <div
+                class="bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl border border-white/50 dark:border-gray-800 rounded-3xl p-10 shadow-[0_8px_25px_rgba(0,0,0,0.06)]">
+
+
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
+                    This calculator helps you understand the breakdown of your Cost to Company (CTC) and estimate your
                     in-hand salary. It accounts for common deductions like Employee Provident Fund (EPF), Professional
-                    Tax, and Income Tax under both the Old and New Tax Regimes.</p>
-                <p>Please note that this is an estimation tool. The final salary and tax calculations may vary based on
+                    Tax, and Income Tax under both the Old and New Tax Regimes.
+                </p>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed mt-3">
+                    Please note that this is an estimation tool. The final salary and tax calculations may vary based on
                     your company's specific policies and your complete financial profile. It's always a good idea to
-                    consult with a financial advisor for exact figures.</p>
+                    consult with a financial advisor for exact figures.
+                </p>
+            </div>
+
+        </div>
+
+        <div id="faq-section" class="mt-20">
+            <h2
+                class="text-4xl font-extrabold mb-10 bg-gradient-to-r from-blue-700 via-teal-600 to-teal-700 bg-clip-text text-transparent dark:from-cyan-300 dark:via-teal-200 dark:to-blue-200 text-center">
+                Frequently Asked Questions
+            </h2>
+
+            <div class="space-y-6">
+
+                <div class="faq-card bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl border border-white/50 dark:border-gray-800 rounded-2xl p-6 shadow-md cursor-pointer transition-all"
+                    onclick="toggleFAQ(this)">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-lg text-gray-900 dark:text-gray-100">1. What is CTC (Cost to
+                            Company)?</h3>
+                        <span class="faq-icon text-2xl text-teal-600 dark:text-teal-300 transition-all">+</span>
+                    </div>
+                    <p class="faq-answer text-gray-700 dark:text-gray-300 mt-3 hidden">
+                        CTC stands for 'Cost to Company'. It is the total amount that a company spends on an employee,
+                        directly or indirectly. It includes your gross salary, employer's contribution to EPF, gratuity
+                        (if applicable), and any other benefits.
+                    </p>
+                </div>
+
+                <div class="faq-card bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl border border-white/50 dark:border-gray-800 rounded-2xl p-6 shadow-md cursor-pointer transition-all"
+                    onclick="toggleFAQ(this)">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-lg text-gray-900 dark:text-gray-100">2. Old vs New Tax Regime?</h3>
+                        <span class="faq-icon text-2xl text-teal-600 dark:text-teal-300 transition-all">+</span>
+                    </div>
+                    <p class="faq-answer text-gray-700 dark:text-gray-300 mt-3 hidden">
+                        Old: more deductions (HRA, LTA, 80C)
+                        New: lower tax slabs but fewer exemptions.
+                    </p>
+                </div>
+
+                <div class="faq-card bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl border border-white/50 dark:border-gray-800 rounded-2xl p-6 shadow-md cursor-pointer transition-all"
+                    onclick="toggleFAQ(this)">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-lg text-gray-900 dark:text-gray-100">3. How is EPF calculated?
+                        </h3>
+                        <span class="faq-icon text-2xl text-teal-600 dark:text-teal-300 transition-all">+</span>
+                    </div>
+                    <p class="faq-answer text-gray-700 dark:text-gray-300 mt-3 hidden">
+                        EPF = 12% of Basic Salary (employee) + 12% employer contribution.
+                    </p>
+                </div>
+
             </div>
         </div>
 
-        <div>
-            <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Frequently Asked Questions (FAQ)</h2>
-            <div class="space-y-6">
-                <div
-                    class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-2xl border border-gray-200/50 dark:border-gray-800 p-6">
-                    <h3 class="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">1. What is CTC (Cost to
-                        Company)?</h3>
-                    <p class="text-gray-700 dark:text-gray-300">CTC stands for 'Cost to Company'. It is the total amount
-                        that a company spends on an employee, directly or indirectly. It includes your gross salary,
-                        employer's contribution to EPF, gratuity (if applicable), and any other benefits.</p>
-                </div>
-                <div
-                    class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-2xl border border-gray-200/50 dark:border-gray-800 p-6">
-                    <h3 class="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">2. What is the difference
-                        between Old and New Tax Regime?</h3>
-                    <p class="text-gray-700 dark:text-gray-300">The New Tax Regime offers lower income tax slabs but
-                        disallows most common deductions. The Old Tax Regime has higher tax slabs but allows you to
-                        claim exemptions like HRA, LTA, and deductions under Section 80C (like EPF), which are factored
-                        into this calculator.</p>
-                </div>
-                <div
-                    class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-2xl border border-gray-200/50 dark:border-gray-800 p-6">
-                    <h3 class="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">3. How is EPF calculated?
-                    </h3>
-                    <p class="text-gray-700 dark:text-gray-300">Employee Provident Fund (EPF) is typically calculated as
-                        12% of your Basic Salary. An equal amount is contributed by your employer. Your contribution
-                        (12%) is deducted from your salary and is eligible for tax deduction under Section 80C in the
-                        Old Regime.</p>
-                </div>
-            </div>
-        </div>
     </section>
+
+    <script>
+        function toggleFAQ(card) {
+            const answer = card.querySelector(".faq-answer");
+            const icon = card.querySelector(".faq-icon");
+            const isOpen = !answer.classList.contains("hidden");
+
+            // Close all other cards
+            document.querySelectorAll(".faq-answer").forEach(a => a.classList.add("hidden"));
+            document.querySelectorAll(".faq-icon").forEach(i => i.textContent = "+");
+
+            // Toggle current
+            if (!isOpen) {
+                answer.classList.remove("hidden");
+                icon.textContent = "−";
+            }
+        }
+    </script>
+
 
     <footer class="relative py-16 px-4 sm:px-6 lg:px-8">
         <div class="max-w-5xl mx-auto px-6">
@@ -1422,8 +1457,9 @@
 
 
         function updateSliderBackground(slider) {
-            const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-            slider.style.setProperty('--value', value + '%');
+            // Note: Slider is removed from final code, keeping function for completeness if it were re-added.
+            // const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+            // slider.style.setProperty('--value', value + '%');
         }
 
         function getChartLabelColor() {
@@ -1432,6 +1468,48 @@
             }
             return '#374151'; // gray-700
         }
+
+        // --- Number to Words (Indian numbering) ---
+        function numberToWordsIndian(num) {
+            num = Number(num) || 0;
+            if (num === 0) return 'Zero rupees';
+
+            const a = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+            const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+            function twoDigits(n) {
+                if (n < 20) return a[n];
+                return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
+            }
+
+            function threeDigits(n) {
+                let str = '';
+                if (n > 99) {
+                    str += a[Math.floor(n / 100)] + ' hundred';
+                    if (n % 100) str += ' ';
+                }
+                if (n % 100) str += twoDigits(n % 100);
+                return str;
+            }
+
+            const crore = Math.floor(num / 10000000);
+            num = num % 10000000;
+            const lakh = Math.floor(num / 100000);
+            num = num % 100000;
+            const thousand = Math.floor(num / 1000);
+            const hund = Math.floor((num % 1000));
+
+            const parts = [];
+            if (crore) parts.push(twoDigits(crore) + ' crore');
+            if (lakh) parts.push(twoDigits(lakh) + ' lakh');
+            if (thousand) parts.push(twoDigits(thousand) + ' thousand');
+            if (hund) parts.push(threeDigits(hund));
+
+            const words = parts.join(' ').replace(/\s+/g, ' ').trim();
+            // Capitalize first letter
+            return words.charAt(0).toUpperCase() + words.slice(1) + ' rupees';
+        }
+
 
         // --- (Global) CTC Calculator Logic ---
 
@@ -1468,8 +1546,9 @@
 
 
             // Tab 1 (CTC -> In-hand)
-            const ctcSlider = document.getElementById('ctcSlider');
+            // const ctcSlider = document.getElementById('ctcSlider'); // Removed from HTML, check if present
             const ctcInputBox = document.getElementById('ctcInputBox');
+            const ctcInWords = document.getElementById('ctcInWords');
             const includePF = document.getElementById('includePF');
             const includeProfTax = document.getElementById('includeProfTax');
             const includeGratuity = document.getElementById('includeGratuity');
@@ -1490,8 +1569,9 @@
             const inputModeInputs = document.querySelectorAll('input[name="inputMode"]');
 
             // Tab 2 (In-hand -> CTC)
-            const monthlyInHandSlider = document.getElementById('monthlyInHandSlider');
+            // const monthlyInHandSlider = document.getElementById('monthlyInHandSlider'); // Removed from HTML, check if present
             const monthlyInHandInputBox = document.getElementById('monthlyInHandInputBox');
+            const monthlyInWords = document.getElementById('monthlyInWords');
             const reverseTaxRegimeInputs = document.querySelectorAll('input[name="taxRegime_reverse"]');
             const reverseLocationSelect = document.getElementById('location_reverse');
             const reverseIncludePF = document.getElementById('includePF_reverse');
@@ -1615,14 +1695,14 @@
 
                 if (mode === 'percentage') {
                     basicInput.value = 40;
-                    // HRA default: 40% of Basic (per requirement)
+                    // HRA default: 40% of Basic (fixed rule)
                     hraInput.value = 40;
                     daInput.value = 10;
                     ltaInput.value = 5;
                     bonusInput.value = 10;
                     specialInput.value = 15;
                 } else {
-                    const ctc = parseFloat(ctcSlider.value) || 0;
+                    const ctc = parseFloat(ctcInputBox ? ctcInputBox.value : 0) || 0;
                     basicInput.value = (ctc * 0.40).toFixed(0);
                     // hra amount = 40% of basic
                     const basicAmount = (ctc * 0.40);
@@ -1636,7 +1716,7 @@
 
             // Main calculation function
             function calculateSalary() {
-                const ctc = parseFloat(ctcSlider.value) || 0;
+                const ctc = parseFloat(ctcInputBox ? ctcInputBox.value : 0) || 0;
                 const inputMode = document.querySelector('input[name="inputMode"]:checked').value;
                 const taxRegime = document.querySelector('input[name="taxRegime"]:checked').value;
                 const location = locationSelect.value;
@@ -1867,7 +1947,7 @@
             // --- (Section 4) In-hand -> CTC Calculator ---
 
             function handleReverseCalculation() {
-                const targetInHandMonthly = parseFloat(monthlyInHandSlider.value) || 0;
+                const targetInHandMonthly = parseFloat(monthlyInHandInputBox ? monthlyInHandInputBox.value : 0) || 0;
                 if (targetInHandMonthly === 0) return;
 
                 const params = {
@@ -2003,9 +2083,9 @@
                     const row = document.createElement('div');
                     row.className = 'flex justify-between items-center';
                     row.innerHTML = `
-                    <span class="text-gray-600 dark:text-gray-400">${slab.range}</span>
-                    <span class="text-sm bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">@ ${slab.rate}%</span>
-                    <span class="font-medium text-gray-800 dark:text-gray-200">${f_simple(slab.tax)}</span>`;
+                        <span class="text-gray-600 dark:text-gray-400">${slab.range}</span>
+                        <span class="text-sm bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">@ ${slab.rate}%</span>
+                        <span class="font-medium text-gray-800 dark:text-gray-200">${f_simple(slab.tax)}</span>`;
                     slabsContainer.appendChild(row);
                 });
                 document.getElementById('taxBeforeCharges').textContent = f_simple(taxBeforeCharges);
@@ -2167,29 +2247,24 @@
                     calculateSalary();
                 }));
 
-                ctcSlider.addEventListener('input', (e) => {
-                    ctcInputBox.value = e.target.value;
-                    updateSliderBackground(ctcSlider);
-                    calculateSalary();
-                });
-
-                ctcInputBox.addEventListener('input', (e) => {
-                    ctcSlider.value = e.target.value;
-                    updateSliderBackground(ctcSlider);
-                    calculateSalary();
-                });
-
-                ctcInputBox.addEventListener('change', (e) => {
-                    let value = parseInt(e.target.value);
-                    const min = parseInt(ctcSlider.min);
-                    const max = parseInt(ctcSlider.max);
-                    if (isNaN(value) || value < min) value = min;
-                    if (value > max) value = max;
-                    e.target.value = value;
-                    ctcSlider.value = value;
-                    updateSliderBackground(ctcSlider);
-                    calculateSalary();
-                });
+                // ctcInputBox (number-only) listeners
+                if (ctcInputBox) {
+                    ctcInputBox.addEventListener('input', (e) => {
+                        // live update words and recalc
+                        try { if (ctcInWords) ctcInWords.textContent = numberToWordsIndian(e.target.value); } catch (e) { }
+                        calculateSalary();
+                    });
+                    ctcInputBox.addEventListener('change', (e) => {
+                        let value = parseInt(e.target.value);
+                        const min = parseInt(e.target.min || 0);
+                        const max = parseInt(e.target.max || Number.MAX_SAFE_INTEGER);
+                        if (isNaN(value) || value < min) value = min;
+                        if (value > max) value = max;
+                        e.target.value = value;
+                        try { if (ctcInWords) ctcInWords.textContent = numberToWordsIndian(e.target.value); } catch (e) { }
+                        calculateSalary();
+                    });
+                }
 
 
                 // --- Tab 2 Listeners ---
@@ -2200,30 +2275,23 @@
                 tab2Inputs.forEach(input => input.addEventListener('input', handleReverseCalculation));
                 reverseTaxRegimeInputs.forEach(input => input.addEventListener('change', handleReverseCalculation));
                 reverseCalcButton.addEventListener('click', handleReverseCalculation);
-
-                monthlyInHandSlider.addEventListener('input', (e) => {
-                    monthlyInHandInputBox.value = e.target.value;
-                    updateSliderBackground(monthlyInHandSlider);
-                    handleReverseCalculation();
-                });
-
-                monthlyInHandInputBox.addEventListener('input', (e) => {
-                    monthlyInHandSlider.value = e.target.value;
-                    updateSliderBackground(monthlyInHandSlider);
-                    handleReverseCalculation();
-                });
-
-                monthlyInHandInputBox.addEventListener('change', (e) => {
-                    let value = parseInt(e.target.value);
-                    const min = parseInt(monthlyInHandSlider.min);
-                    const max = parseInt(monthlyInHandSlider.max);
-                    if (isNaN(value) || value < min) value = min;
-                    if (value > max) value = max;
-                    e.target.value = value;
-                    monthlyInHandSlider.value = value;
-                    updateSliderBackground(monthlyInHandSlider);
-                    handleReverseCalculation();
-                });
+                // monthlyInHandInputBox listeners (number-only)
+                if (monthlyInHandInputBox) {
+                    monthlyInHandInputBox.addEventListener('input', (e) => {
+                        try { if (monthlyInWords) monthlyInWords.textContent = numberToWordsIndian(e.target.value); } catch (e) { }
+                        handleReverseCalculation();
+                    });
+                    monthlyInHandInputBox.addEventListener('change', (e) => {
+                        let value = parseInt(e.target.value);
+                        const min = parseInt(e.target.min || 0);
+                        const max = parseInt(e.target.max || Number.MAX_SAFE_INTEGER);
+                        if (isNaN(value) || value < min) value = min;
+                        if (value > max) value = max;
+                        e.target.value = value;
+                        try { if (monthlyInWords) monthlyInWords.textContent = numberToWordsIndian(e.target.value); } catch (e) { }
+                        handleReverseCalculation();
+                    });
+                }
 
                 // --- Footer Link Logic ---
                 const footerTabButtons = document.querySelectorAll('.footer-tab-btn');
@@ -2244,12 +2312,9 @@
                 updateInputLabels();
                 initializeChart();
 
-                updateSliderBackground(ctcSlider);
-                updateSliderBackground(monthlyInHandSlider);
-
-                ctcInputBox.value = ctcSlider.value;
-                monthlyInHandInputBox.value = monthlyInHandSlider.value;
-
+                // Initialize displays and calculations
+                try { if (ctcInWords) ctcInWords.textContent = numberToWordsIndian(ctcInputBox ? ctcInputBox.value : 0); } catch (e) { }
+                try { if (monthlyInWords) monthlyInWords.textContent = numberToWordsIndian(monthlyInHandInputBox ? monthlyInHandInputBox.value : 0); } catch (e) { }
                 calculateSalary();
                 handleReverseCalculation();
             }
