@@ -32,18 +32,23 @@
         }
 
         // Dark Mode Initializer
-            ; (function () {
-                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            })();
+        ; (function () {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
     </script>
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
+        }
+
+        /* Prevent layout shift from scrollbar appearance/disappearance */
+        html {
+            overflow-y: scroll;
         }
 
         /* --- YEH AAPKA NAYA BACKGROUND STYLE HAI --- */
@@ -65,13 +70,10 @@
                     #f2f7fb 100%);
             background-repeat: no-repeat;
             background-size: cover;
-            /* NOTE: remove filter from this element to avoid creating a new containing block
-					      that breaks `position: fixed` on children (like the header). The visual
-					      filter is applied via a fixed ::before pseudo-element instead. */
         }
 
         /* Use a fixed pseudo-element to render the background + filter so that
-			      `position: fixed` children (header) remain fixed to the viewport. */
+			      `position: fixed` children (header) remain fixed to the viewport. */
         .bg-arpit-gradient::before {
             content: '';
             position: fixed;
@@ -253,6 +255,13 @@
 
         /* --- Premium Minimal Header with Glassmorphism --- */
         header {
+            /* Fix: Center header by default */
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%; /* Default to full width on mobile */
+            max-width: 100%;
+
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 251, 242, 0.8) 50%, rgba(234, 243, 255, 0.75) 100%);
             backdrop-filter: blur(16px) saturate(120%);
             -webkit-backdrop-filter: blur(16px) saturate(120%);
@@ -267,11 +276,19 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
             transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: box-shadow, transform, background;
-            position: relative;
+            will-change: box-shadow, background; /* transform removed from here */
+            z-index: 50;
             overflow: hidden;
         }
 
+        /* For large screens, constrain the header width */
+        @media (min-width: 1024px) {
+            header {
+                width: 70%; 
+                max-width: 100%; 
+            }
+        }
+        
         /* Floating blob shapes in header background */
         header::before {
             content: '';
@@ -320,7 +337,7 @@
                 0 12px 32px rgba(13, 148, 136, 0.12),
                 0 24px 64px rgba(59, 130, 246, 0.06),
                 inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            transform: translateY(-2px);
+            /* FIX: Removed transform: translateY(-2px); to fix side-shifting */
         }
 
         /* Scrolled state - enhanced frosted glass effect */
@@ -337,26 +354,19 @@
             padding: 8px 0;
             /* --- NEW ANIMATION PROPERTIES --- */
             width: 100% !important;
-            /* Force full width */
             max-width: 100% !important;
-            /* Override any container limits */
             top: 0 !important;
-            /* Stick to very top */
             border-radius: 0 !important;
-            /* Remove rounded corners */
             left: 0 !important;
-            /* Reset centering positioning */
-            transform: none !important;
-            /* Reset centering transform */
+            transform: none !important; /* FIX: Added back to ensure it overrides fixed center CSS for full width */
         }
 
         /* --- NEW: Expand inner content when scrolled --- */
         header.scrolled .max-w-5xl {
             max-width: 95% !important;
             /* Expands from 1024px to 95% of screen */
-            padding-left: 0;
-            /* Optional: Adjust padding if needed */
-            padding-right: 0;
+            padding-left: 1.5rem; /* Re-add horizontal padding for content */
+            padding-right: 1.5rem;
         }
 
         /* Dark mode header styling */
@@ -377,6 +387,7 @@
                 0 12px 32px rgba(13, 148, 136, 0.15),
                 0 24px 64px rgba(59, 130, 246, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            /* FIX: Removed transform: translateY(-2px); */
         }
 
         .dark header.scrolled {
@@ -443,6 +454,42 @@
             width: 100%;
             background: linear-gradient(90deg, #0d9488, #14b8a6);
         }
+
+        /* Floating Glass Logo Box */
+        .footer-logo-box {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(14px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            padding: 10px 14px;
+            border-radius: 16px;
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.08),
+                0 12px 38px rgba(13, 148, 136, 0.10),
+                0 20px 60px rgba(59, 130, 246, 0.10);
+            transition: all .35s ease;
+        }
+
+        /* Logo Image */
+        .footer-logo-img {
+            width: 70px;
+            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+            transition: all .35s ease;
+        }
+
+        /* Hover animation */
+        .footer-logo-box:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow:
+                0 6px 20px rgba(0, 0, 0, 0.1),
+                0 16px 40px rgba(13, 148, 136, 0.15),
+                0 30px 70px rgba(59, 130, 246, 0.12);
+        }
+
+        .footer-logo-box:hover .footer-logo-img {
+            transform: scale(1.09);
+        }
+
 
         /* --- Premium Footer Styles --- */
         footer {
@@ -520,32 +567,10 @@
 
         /* Card-like sections in footer */
         footer .grid>div {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            transition: all 300ms ease;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+            /* REVERTING to ensure responsive stacking on mobile */
+            /* Removed card-like styling for pure link sections */
         }
-
-        footer .grid>div:hover {
-            background: rgba(255, 255, 255, 0.7);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.9);
-            transform: translateY(-2px);
-        }
-
-        .dark footer .grid>div {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.08);
-        }
-
-        .dark footer .grid>div:hover {
-            background: rgba(30, 41, 59, 0.6);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.12);
-        }
-
+        
         /* Footer headings */
         footer h4 {
             background: linear-gradient(135deg, #0d9488 0%, #0e7490 100%);
@@ -633,62 +658,60 @@
 
 <body class="min-h-screen bg-arpit-gradient text-gray-800 dark:text-gray-200 transition-colors duration-300">
 
-    <div class="relative flex justify-center items-center">
-        <header class="fixed w-[70%] top-0 z-50 border-b border-gray-200/80 dark:border-white/10 rounded-bl-[30px] rounded-br-[30px] transition-all">
-            <div class="max-w-5xl mx-auto flex justify-between items-center px-6 py-3">
-                <div class="flex items-center gap-3">
-                    <img src="logo.png" alt="CTC Calculator Logo" class="h-[80px] w-[80px] object-contain">
-
-                </div>
-
-                <div class="flex items-center space-x-2">
-
-                    <div class="hidden sm:flex items-center space-x-2 text-sm">
-                        <a href="#about-section" class="tab-btn py-1 px-3">About</a>
-                        <a href="#faq-section" class="tab-btn py-1 px-3">FAQs</a>
-                        <a href="#" class="tab-btn py-1 px-3">Blog</a>
-                    </div>
-                    <button id="theme-toggle"
-                        class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
-                        <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
-                            </path>
-                        </svg>
-                        <svg id="theme-icon-dark" class="w-6 h-6 hidden" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
-                            </path>
-                        </svg>
-                    </button>
-
-                    <button id="mobile-menu-toggle"
-                        class="sm:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16m-7 6h7"></path>
-                        </svg>
-                    </button>
-                </div>
+    <header class="fixed w-full top-0 z-50 border-b border-gray-200/80 dark:border-white/10 lg:rounded-bl-[30px] lg:rounded-br-[30px] transition-all" style="left: 50%; transform: translateX(-50%);">
+        <div class="max-w-5xl mx-auto flex justify-between items-center px-4 sm:px-6 py-3">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="CTC Calculator Logo" class="h-[80px] w-[80px] object-contain">
             </div>
 
-            <nav id="mobile-menu"
-                class="hidden sm:block w-full border-t border-gray-200/80 dark:border-white/10 sm:border-t-0 bg-white dark:bg-gray-900 sm:bg-transparent dark:sm:bg-transparent">
-                <div
-                    class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-center w-full sm:space-x-8 text-gray-500 text-sm sm:text-base font-extrabold p-4 sm:p-0 sm:max-w-5xl mx-auto space-y-2 sm:space-y-0">
-                    <button class="tab-btn tab-active" data-tab="ctc-to-inhand">CTC → In-hand</button>
-                    <button class="tab-btn" data-tab="inhand-to-ctc">In-hand → CTC</button>
-                    <button class="tab-btn" data-tab="compare">Compare Offers</button>
-                    <button class="tab-btn" data-tab="tax">Tax Calculator</button>
-                    <button class="tab-btn" data-tab="hike">Hike Calculator</button>
-                    <button class="tab-btn" data-tab="additional">Additional Calculator</button>
+            <div class="flex items-center space-x-2">
+
+                <div class="hidden sm:flex items-center space-x-2 text-sm">
+                    <a href="#about-section" class="tab-btn py-1 px-3">About</a>
+                    <a href="#faq-section" class="tab-btn py-1 px-3">FAQs</a>
+                    <a href="#" class="tab-btn py-1 px-3">Blog</a>
                 </div>
-            </nav>
-        </header>
+                <button id="theme-toggle"
+                    class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+                    <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                        </path>
+                    </svg>
+                    <svg id="theme-icon-dark" class="w-6 h-6 hidden" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                        </path>
+                    </svg>
+                </button>
+
+                <button id="mobile-menu-toggle"
+                    class="sm:hidden p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
+
+        <nav id="mobile-menu"
+            class="hidden sm:block w-full border-t border-gray-200/80 dark:border-white/10 sm:border-t-0 bg-white dark:bg-gray-900 sm:bg-transparent dark:sm:bg-transparent">
+            <div
+                class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-center w-full sm:space-x-8 text-gray-500 text-sm sm:text-base font-extrabold p-4 sm:p-0 sm:max-w-5xl mx-auto space-y-2 sm:space-y-0">
+                <button class="tab-btn tab-active" data-tab="ctc-to-inhand">CTC → In-hand</button>
+                <button class="tab-btn" data-tab="inhand-to-ctc">In-hand → CTC</button>
+                <button class="tab-btn" data-tab="compare">Compare Offers</button>
+                <button class="tab-btn" data-tab="tax">Tax Calculator</button>
+                <button class="tab-btn" data-tab="hike">Hike Calculator</button>
+                <button class="tab-btn" data-tab="additional">Additional Calculator</button>
+            </div>
+        </nav>
+    </header>
+    
     <main class="container mx-auto px-4 py-8 relative z-10 pt-40 sm:pt-48">
 
         <div id="tab-content">
@@ -702,7 +725,8 @@
                         <div>
                             <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Enter your Annual
                                 CTC</label>
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                            <div
+                                class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                                 <div class="w-full sm:flex-1">
                                     <div
                                         class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-full sm:w-auto sm:min-w-[130px] px-4 py-2">
@@ -1032,7 +1056,8 @@
                         <div>
                             <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Desired Net Monthly
                                 In-hand</label>
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                            <div
+                                class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                                 <div class="w-full sm:flex-1">
                                     <div
                                         class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-full sm:w-auto sm:min-w-[130px] px-4 py-2">
@@ -1243,7 +1268,7 @@
             <div id="hike" class="tab-panel hidden">
                 <div
                     class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 max-w-3xl mx-auto text-center">
-                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Hike Calculator</h3>
+                    <h3 class="2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Hike Calculator</h3>
                     <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
                 </div>
             </div>
@@ -1355,41 +1380,44 @@
 
 
     <footer class="relative py-16 px-4 sm:px-6 lg:px-8">
+
+        <div class="absolute top-6 left-6 z-20">
+            <div class="footer-logo-box">
+                <img src="logo.png" alt="CTC Logo" class="footer-logo-img">
+            </div>
+        </div>
+
         <div class="max-w-5xl mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="col-span-2 md:col-span-1">
                     <h4 class="font-semibold mb-4 text-lg">Calculators</h4>
                     <ul class="space-y-3">
-                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="ctc-to-inhand">CTC
-                                → In-hand</button></li>
-                        <li><button class="footer-tab-btn text-sm transition-colors"
-                                data-tab-target="inhand-to-ctc">In-hand → CTC</button></li>
-                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="compare">Compare
-                                Offers</button></li>
-                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="tax">Tax
-                                Calculator</button></li>
-                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="hike">Hike
-                                Calculator</button></li>
-                        <li><button class="footer-tab-btn text-sm transition-colors"
-                                data-tab-target="additional">Additional Calculator</button></li>
+                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="ctc-to-inhand">CTC → In-hand</button></li>
+                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="inhand-to-ctc">In-hand → CTC</button></li>
+                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="compare">Compare Offers</button></li>
+                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="tax">Tax Calculator</button></li>
+                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="hike">Hike Calculator</button></li>
+                        <li><button class="footer-tab-btn text-sm transition-colors" data-tab-target="additional">Additional Calculator</button></li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="font-semibold mb-4 text-lg">Resources</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-sm transition-colors">About Us</a></li>
-                        <li><a href="#" class="text-sm transition-colors">Blog</a></li>
-                        <li><a href="#" class="text-sm transition-colors">Contact</a></li>
-                    </ul>
+                <div class="col-span-2 md:col-span-2 grid grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-semibold mb-4 text-lg">Resources</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#" class="text-sm transition-colors">About Us</a></li>
+                            <li><a href="#" class="text-sm transition-colors">Blog</a></li>
+                            <li><a href="#" class="text-sm transition-colors">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4 text-lg">Legal</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#" class="text-sm transition-colors">Privacy Policy</a></li>
+                            <li><a href="#" class="text-sm transition-colors">Terms of Service</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div>
-                    <h4 class="font-semibold mb-4 text-lg">Legal</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-sm transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="text-sm transition-colors">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div>
+                <div class="col-span-2 md:col-span-1">
                     <h4 class="font-semibold mb-4 text-lg">Follow Us</h4>
                     <ul class="space-y-3">
                         <li><a href="#" class="text-sm transition-colors">Twitter</a></li>
@@ -1399,10 +1427,12 @@
                 </div>
             </div>
             <div class="mt-12 pt-8 text-center">
+                <hr class="border-gray-200/80 dark:border-gray-700/80 mb-6" style="background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent); height: 1px; border: none;">
                 <p class="text-sm">&copy; 2025 CTC Calculator. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
 
     <div id="taxDetailsModal" class="modal">
         <div class="modal-content">
