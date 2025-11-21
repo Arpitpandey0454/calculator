@@ -213,8 +213,18 @@
         <div id="tab-content">
 
             <div id="ctc-to-inhand" class="tab-panel">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
+                <div class="max-w-5xl mx-auto mb-6">
+                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8">
+                        <h2 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">CTC → In-hand Calculator</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Enter your CTC and components to see gross, deductions and net in-hand salary.</p>
+                    </div>
+                </div>
+
+                <div class="max-w-5xl mx-auto">
+                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8">
+                       
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="p-6 rounded-2xl bg-amber-40 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-100">
                         <div>
                             <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Enter your Annual CTC</label>
                             <div class="flex flex-col">
@@ -326,7 +336,7 @@
 
                     </div>
 
-                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
+                    <div class="p-6 rounded-2xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-700">
                         <h2 id="regimeTitle" class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Salary Breakdown under New Tax Regime</h2>
                         <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center">
                             <p class="text-center text-gray-600 dark:text-gray-400 text-sm">Net Monthly Salary</p>
@@ -361,7 +371,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
+                    <div class="p-6 rounded-2xl bg-rose-40 dark:bg-rose-500/8 border border-rose-200 dark:border-rose-100">
                         <div>
                             <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Deductions (Annual)</h3>
                             <div class="space-y-2 text-sm" id="deductionsBreakdown">
@@ -412,77 +422,84 @@
                                 </button>
                             </div>
                         </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="inhand-to-ctc" class="tab-panel hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
-                        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Calculate CTC from In-hand</h2>
-                        <div>
-                            <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Desired Net Monthly In-hand</label>
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                                <div class="w-full sm:flex-1">
-                                    <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-full sm:w-auto sm:min-w-[130px] px-4 py-2">
-                                        <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
-                                        <input type="number" id="monthlyInHandInputBox" class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none" value="70000" step="1000" min="10000" max="500000">
-                                    </div>
-                                    <p id="monthlyInWords" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Seventy thousand rupees</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="border-gray-200/80 dark:border-gray-700/80">
-
-                        <div class="space-y-4">
-                            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Tax Regime</h3>
-                            <div class="flex items-center space-x-4">
-                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Regime:</span>
-                                <div class="flex items-center space-x-3">
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" name="taxRegime_reverse" value="new" checked class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-teal-500">
-                                        <span class="ml-2 text-gray-700 dark:text-gray-300">New</span>
-                                    </label>
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" name="taxRegime_reverse" value="old" class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-teal-500">
-                                        <span class="ml-2 text-gray-700 dark:text-gray-300">Old</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="border-gray-200/80 dark:border-gray-700/80">
-
-                        <div class="space-y-3">
-                            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Assumed Deductions</h3>
-                            <label class="flex items-center cursor-pointer">
-                                <input type="checkbox" id="includePF_reverse" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
-                                <span class="ml-2 text-gray-700 dark:text-gray-300">EPF Applicable</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer">
-                                <input type="checkbox" id="includeProfTax_reverse" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
-                                <span class="ml-2 text-gray-700 dark:text-gray-300">Professional Tax</span>
-                            </label>
-                        </div>
-
-                        <button id="calculateReverse" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-full transition-colors duration-200 shadow-lg">
-                            Calculate Required CTC
-                        </button>
+                <div class="max-w-5xl mx-auto mb-6">
+                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8">
+                        <h2 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">In-hand → CTC Calculator</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Enter desired monthly in-hand to estimate required CTC and breakdown.</p>
                     </div>
+                </div>
 
-                    <div id="reverseResultCard" class="lg:col-span-2 hidden">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
-                                <h2 id="reverseRegimeTitle" class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Required CTC Breakdown</h2>
-                                <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center">
+                <div class="max-w-5xl mx-auto">
+                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                            <div class="p-6 rounded-2xl bg-amber-48 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-100">
+                                <!-- Left: Input Panel -->
+                                <h4 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Calculate CTC from In-hand</h4>
+                                <div>
+                                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-4">Desired Net Monthly In-hand</label>
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                                        <div class="w-full sm:flex-1">
+                                            <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full w-full sm:w-auto sm:min-w-[130px] px-4 py-2">
+                                                <span class="text-gray-600 dark:text-gray-300 font-medium">₹</span>
+                                                <input type="number" id="monthlyInHandInputBox" class="w-full bg-transparent text-gray-700 dark:text-gray-200 font-medium text-right focus:outline-none" value="70000" step="1000" min="10000" max="500000">
+                                            </div>
+                                            <p id="monthlyInWords" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Seventy thousand rupees</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300">Tax Regime</h5>
+                                    <div class="flex items-center space-x-4 mt-2">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="radio" name="taxRegime_reverse" value="new" checked class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-teal-500">
+                                            <span class="ml-2 text-gray-700 dark:text-gray-300">New</span>
+                                        </label>
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="radio" name="taxRegime_reverse" value="old" class="h-4 w-4 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-teal-500">
+                                            <span class="ml-2 text-gray-700 dark:text-gray-300">Old</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <hr class="border-gray-200/80 dark:border-gray-700/80 my-4">
+
+                                <div class="space-y-3">
+                                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300">Assumed Deductions</h5>
+                                    <label class="flex items-center cursor-pointer mt-2">
+                                        <input type="checkbox" id="includePF_reverse" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                                        <span class="ml-2 text-gray-700 dark:text-gray-300">EPF Applicable</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" id="includeProfTax_reverse" checked class="h-5 w-5 text-teal-600 dark:text-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 focus:ring-teal-500">
+                                        <span class="ml-2 text-gray-700 dark:text-gray-300">Professional Tax</span>
+                                    </label>
+                                </div>
+
+                                <button id="calculateReverse" class="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-full transition-colors duration-200 shadow-lg">
+                                    Calculate Required CTC
+                                </button>
+                            </div>
+
+                            <div id="reverseResultCard" class="p-6 rounded-2xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-700">
+                                <!-- Middle: Results Panel -->
+                                <h4 id="reverseRegimeTitle" class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Required CTC Breakdown</h4>
+                                <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center mb-4">
                                     <p class="text-center text-gray-600 dark:text-gray-400 text-sm">Required Annual CTC</p>
                                     <h3 class="text-3xl font-bold text-center text-blue-600 dark:text-blue-400" id="calculatedCTC">₹0</h3>
                                     <p class="text-center text-gray-500 dark:text-gray-500 text-sm mt-2">Gives Net Monthly: <span id="calculatedMonthlyInHand" class="font-medium text-gray-600 dark:text-gray-400">₹0</span></p>
                                 </div>
-                                <canvas id="reverseSalaryChart" class="max-h-64 sm:max-h-72"></canvas>
+                                <canvas id="reverseSalaryChart" class="max-h-64 sm:max-h-72 mb-4"></canvas>
                                 <div>
-                                    <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Cost to Company Breakup</h3>
+                                    <h5 class="font-semibold mb-2 text-gray-800 dark:text-gray-100">Cost to Company Breakup</h5>
                                     <div class="space-y-2 text-sm bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
                                         <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gross Salary</span> <span id="reverse_grossSalaryCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
                                         <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Employer EPF</span> <span id="reverse_employerEpfCtc" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
@@ -493,23 +510,22 @@
                                 </div>
                             </div>
 
-                            <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 space-y-6">
-                                <div>
-                                    <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Earnings Breakdown (Annual)</h3>
-                                    <div class="space-y-2 text-sm">
-                                        <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Basic Salary</span> <span id="reverse_basicAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
-                                        <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">HRA</span> <span id="reverse_hraAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
-                                        <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Special Allowance</span> <span id="reverse_specialAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
-                                        <div class="flex justify-between font-semibold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
-                                            <span>Gross Salary</span> <span id="reverse_grossYearly">₹0</span>
-                                        </div>
+                            <div class="p-6 rounded-2xl bg-rose-40 dark:bg-rose-950/10 border border-rose-200 dark:border-rose-100">
+                                <!-- Right: Breakdown Panel -->
+                                <h4 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Earnings & Deductions</h4>
+                                <div class="space-y-2 text-sm mb-4">
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Basic Salary</span> <span id="reverse_basicAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">HRA</span> <span id="reverse_hraAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                    <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Special Allowance</span> <span id="reverse_specialAmount" class="font-medium text-gray-900 dark:text-gray-100">₹0</span></div>
+                                    <div class="flex justify-between font-semibold border-t border-gray-300 dark:border-gray-700 pt-2 mt-2 text-gray-900 dark:text-gray-100">
+                                        <span>Gross Salary</span> <span id="reverse_grossYearly">₹0</span>
                                     </div>
                                 </div>
 
-                                <hr class="border-gray-200/80 dark:border-gray-700/80">
+                                <hr class="border-gray-200/80 dark:border-gray-700/80 mb-4">
 
                                 <div>
-                                    <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Deductions (Annual)</h3>
+                                    <h5 class="font-semibold mb-2 text-gray-800 dark:text-gray-100">Deductions (Annual)</h5>
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">EPF (Employee)</span> <span id="reverse_epfEmployee" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
                                         <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Professional Tax</span> <span id="reverse_profTaxAmount" class="text-red-600 dark:text-red-400 font-medium">₹0</span></div>
@@ -520,10 +536,9 @@
                                     </div>
                                 </div>
 
-                                <hr class="border-gray-200/80 dark:border-gray-700/80">
-
-                                <div>
-                                    <h3 class="font-semibold mb-3 text-gray-800 dark:text-gray-100">Download Report</h3>
+                                <hr class="border-gray-200/80 dark:border-gray-700/80 mt-4">
+                                <div class="mt-4">
+                                    <h5 class="font-semibold mb-2 text-gray-800 dark:text-gray-100">Download Report</h5>
                                     <div class="grid grid-cols-2 gap-4">
                                         <button id="downloadPdf_reverse" class="flex items-center justify-center bg-teal-600 text-white px-4 py-3 rounded-lg hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 font-semibold transition-all">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -555,6 +570,7 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">CTC (₹)</label>
                                         <input type="number" id="offerCtc1" placeholder="50,00,000" min="1" max="10000000" class="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all">
+                                        <p id="offerCtc1Words" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Zero rupees</p>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tax Regime</label>
@@ -573,6 +589,7 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">CTC (₹)</label>
                                         <input type="number" id="offerCtc2" placeholder="55,00,000" min="1" max="10000000" class="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+                                        <p id="offerCtc2Words" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Zero rupees</p>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tax Regime</label>
@@ -652,6 +669,7 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gross Salary (₹)</label>
                                         <input type="number" id="taxGrossIncome" placeholder="0" min="0" class="w-full bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-teal-400 transition-all">
+                                        <p id="taxGrossWords" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Zero rupees</p>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Employee PF (₹)</label>
@@ -754,10 +772,12 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current CTC (₹)</label>
                                         <input type="number" id="hikeCurrentCtc" placeholder="50,00,000" min="1" max="10000000" class="w-full bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-400 transition-all">
+                                        <p id="hikeCurrentCtcWords" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Zero rupees</p>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Monthly In-hand (₹)</label>
                                         <input type="number" id="hikeCurrentMonthly" placeholder="3,00,000" min="0" class="w-full bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg py-2 px-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-400 transition-all">
+                                        <p id="hikeCurrentMonthlyWords" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Zero rupees</p>
                                     </div>
                                 </div>
 
@@ -1816,7 +1836,108 @@
 
                 document.getElementById('hikeBreakdown').classList.remove('hidden');
             });
+
+            // --- wire number-to-words displays for new inputs ---
+            const wireWords = (inputId, wordsId) => {
+                const inp = document.getElementById(inputId);
+                const out = document.getElementById(wordsId);
+                if (!inp || !out) return;
+                const update = (v) => {
+                    try { out.textContent = numberToWordsIndian(v || inp.value || 0); } catch (e) { out.textContent = 'Zero rupees'; }
+                };
+                // initialize
+                update();
+                inp.addEventListener('input', (e) => {
+                    let val = e.target.value;
+                    if (val.length > 1 && val.startsWith('0')) { val = val.replace(/^0+/, ''); e.target.value = val; }
+                    update(val);
+                });
+                inp.addEventListener('keydown', (e) => { if (['.', '-', 'e', 'E', '+'].includes(e.key)) e.preventDefault(); });
+            };
+
+            wireWords('offerCtc1', 'offerCtc1Words');
+            wireWords('offerCtc2', 'offerCtc2Words');
+            wireWords('taxGrossIncome', 'taxGrossWords');
+            wireWords('hikeCurrentCtc', 'hikeCurrentCtcWords');
+            wireWords('hikeCurrentMonthly', 'hikeCurrentMonthlyWords');
         });
+    </script>
+
+    <script>
+        // Global numeric input enforcement
+        // Prevent negatives, decimals, scientific notation and leading zeros across all numeric inputs
+        (function () {
+            const forbiddenKeys = ['.', '-', 'e', 'E', '+'];
+            const inputs = Array.from(document.querySelectorAll('input[type="number"]'));
+
+            inputs.forEach((inp) => {
+                // Keydown: block forbidden characters
+                inp.addEventListener('keydown', (e) => {
+                    if (forbiddenKeys.includes(e.key)) e.preventDefault();
+                });
+
+                // Paste: sanitize pasted content
+                inp.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text') || '';
+                    let sanitized = text.replace(/\D+/g, '');
+                    if (sanitized.length > 1 && sanitized.startsWith('0')) sanitized = sanitized.replace(/^0+/, '');
+                    inp.value = sanitized;
+                    // Dispatch input so other listeners (words, calculations) update
+                    const ev = new Event('input', { bubbles: true });
+                    inp.dataset._sanitizing = '1';
+                    inp.dispatchEvent(ev);
+                });
+
+                // Input: sanitize live typing
+                inp.addEventListener('input', (e) => {
+                    // If this input event is re-dispatched by our code, skip re-processing once
+                    if (e.target.dataset._sanitizing === '1') { e.target.dataset._sanitizing = '0'; return; }
+
+                    let v = e.target.value || '';
+                    // Remove any non-digit characters (disallow decimals and signs)
+                    v = v.replace(/\D+/g, '');
+                    // Strip leading zeros when length > 1
+                    if (v.length > 1 && v.startsWith('0')) v = v.replace(/^0+/, '');
+
+                    // Apply sanitized value back
+                    if (e.target.value !== v) e.target.value = v;
+
+                    // Clamp to min/max if attributes provided
+                    const minAttr = e.target.getAttribute('min');
+                    const maxAttr = e.target.getAttribute('max');
+                    if (v !== '') {
+                        let num = parseInt(v, 10);
+                        if (minAttr !== null && minAttr !== '' && !isNaN(minAttr) && num < parseInt(minAttr, 10)) {
+                            num = parseInt(minAttr, 10);
+                            e.target.value = String(num);
+                        }
+                        if (maxAttr !== null && maxAttr !== '' && !isNaN(maxAttr) && num > parseInt(maxAttr, 10)) {
+                            e.target.value = String(parseInt(maxAttr, 10));
+                        }
+                    }
+
+                    // Re-dispatch an 'input' event so other listeners (number-to-words, calc) run.
+                    // We mark dataset._sanitizing to avoid re-processing our own dispatched event.
+                    e.target.dataset._sanitizing = '1';
+                    const ev = new Event('input', { bubbles: true });
+                    e.target.dispatchEvent(ev);
+                });
+
+                // Change: ensure final value is integer and fallback to min if empty
+                inp.addEventListener('change', (e) => {
+                    let v = e.target.value || '';
+                    v = v.replace(/\D+/g, '');
+                    if (v.length > 1 && v.startsWith('0')) v = v.replace(/^0+/, '');
+                    if (v === '') {
+                        const minAttr = e.target.getAttribute('min');
+                        e.target.value = (minAttr !== null && minAttr !== '') ? minAttr : '';
+                        return;
+                    }
+                    e.target.value = v;
+                });
+            });
+        })();
     </script>
 </body>
 </html>
