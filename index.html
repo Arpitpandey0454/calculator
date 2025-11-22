@@ -872,9 +872,158 @@
             </div>
 
             <div id="additional" class="tab-panel hidden">
-                <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl dark:shadow-none border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8 max-w-3xl mx-auto text-center">
-                    <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Additional Calculator</h3>
-                    <p class="text-gray-600 dark:text-gray-400">Coming Soon...</p>
+                <div class="max-w-6xl mx-auto">
+                    <div class="bg-white/60 dark:bg-gray-900 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200/50 dark:border-gray-800 p-6 sm:p-8">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Additional Calculators</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">Small utilities: PF, HRA exemption, Gratuity, LTA, Bonus and Cost-of-Living comparison.</p>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- PF Calculator -->
+                            <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-700">
+                                <h4 class="font-semibold mb-3">PF Calculator</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Annual Basic (₹)</label>
+                                        <input id="pf_basic" type="number" min="0" value="600000" class="w-36 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Employee PF Rate (%)</label>
+                                        <input id="pf_rate_emp" type="number" min="0" max="100" value="12" class="w-24 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Employer PF Rate (%)</label>
+                                        <input id="pf_rate_emp_er" type="number" min="0" max="100" value="12" class="w-24 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="pt-2 flex gap-2">
+                                        <button id="calc_pf" class="flex-1 bg-teal-600 text-white py-2 rounded-lg">Calculate PF</button>
+                                    </div>
+                                    <div id="pf_result" class="mt-3 text-sm text-gray-700 dark:text-gray-200"></div>
+                                </div>
+                            </div>
+
+                            <!-- HRA Exemption Calculator -->
+                            <div class="p-5 rounded-2xl bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-700">
+                                <h4 class="font-semibold mb-3">HRA Exemption Calculator</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Basic Monthly (₹)</label>
+                                        <input id="hra_basic_monthly" type="number" min="0" value="50000" class="w-36 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">HRA Received Monthly (₹)</label>
+                                        <input id="hra_received_monthly" type="number" min="0" value="20000" class="w-36 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Rent Paid Monthly (₹)</label>
+                                        <input id="hra_rent_monthly" type="number" min="0" value="22000" class="w-36 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <label class="text-gray-700 dark:text-gray-300">City Type:</label>
+                                        <select id="hra_city_type" class="bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-sm">
+                                            <option value="metro">Metro (50%)</option>
+                                            <option value="nonmetro">Non-Metro (40%)</option>
+                                        </select>
+                                    </div>
+                                    <div class="pt-2 flex gap-2">
+                                        <button id="calc_hra" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Calculate HRA Exemption</button>
+                                    </div>
+                                    <div id="hra_result" class="mt-3 text-sm text-gray-700 dark:text-gray-200"></div>
+                                </div>
+                            </div>
+
+                            <!-- Gratuity Calculator -->
+                            <div class="p-5 rounded-2xl bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-700">
+                                <h4 class="font-semibold mb-3">Gratuity Calculator</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Last Drawn Basic Monthly (₹)</label>
+                                        <input id="grat_basic_monthly" type="number" min="0" value="50000" class="w-36 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Years of Service</label>
+                                        <input id="grat_years" type="number" min="0" value="5" class="w-24 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="pt-2 flex gap-2">
+                                        <button id="calc_gratuity" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg">Calculate Gratuity</button>
+                                    </div>
+                                    <div id="grat_result" class="mt-3 text-sm text-gray-700 dark:text-gray-200"></div>
+                                </div>
+                            </div>
+
+                            <!-- LTA Calculator -->
+                            <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-700">
+                                <h4 class="font-semibold mb-3">LTA Calculator</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">LTA Received (Annual ₹)</label>
+                                        <input id="lta_received" type="number" min="0" value="40000" class="w-36 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Travel Expenses Claimed (₹)</label>
+                                        <input id="lta_expenses" type="number" min="0" value="35000" class="w-36 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="pt-2 flex gap-2">
+                                        <button id="calc_lta" class="flex-1 bg-teal-600 text-white py-2 rounded-lg">Calculate LTA Exemption</button>
+                                    </div>
+                                    <div id="lta_result" class="mt-3 text-sm text-gray-700 dark:text-gray-200"></div>
+                                </div>
+                            </div>
+
+                            <!-- Bonus Calculator -->
+                            <div class="p-5 rounded-2xl bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-700">
+                                <h4 class="font-semibold mb-3">Bonus Calculator</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">CTC or Basic (Annual ₹)</label>
+                                        <input id="bonus_base" type="number" min="0" value="1000000" class="w-36 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-gray-700 dark:text-gray-300">Bonus %</label>
+                                        <input id="bonus_percent" type="number" min="0" max="100" value="10" class="w-24 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                    <div class="pt-2 flex gap-2">
+                                        <button id="calc_bonus" class="flex-1 bg-blue-600 text-white py-2 rounded-lg">Calculate Bonus</button>
+                                    </div>
+                                    <div id="bonus_result" class="mt-3 text-sm text-gray-700 dark:text-gray-200"></div>
+                                </div>
+                            </div>
+
+                            <!-- Cost of Living Comparison -->
+                            <div class="p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-700 lg:col-span-2">
+                                <h4 class="font-semibold mb-3">Cost-of-Living Comparison</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                                    <div>
+                                        <label class="text-gray-700 dark:text-gray-300">City A</label>
+                                        <select id="col_city_a" class="w-full bg-white dark:bg-gray-800 rounded-lg px-3 py-2">
+                                            <option value="mumbai">Mumbai</option>
+                                            <option value="bangalore">Bangalore</option>
+                                            <option value="delhi">Delhi</option>
+                                            <option value="pune">Pune</option>
+                                            <option value="chennai">Chennai</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-gray-700 dark:text-gray-300">City B</label>
+                                        <select id="col_city_b" class="w-full bg-white dark:bg-gray-800 rounded-lg px-3 py-2">
+                                            <option value="pune">Pune</option>
+                                            <option value="mumbai">Mumbai</option>
+                                            <option value="bangalore">Bangalore</option>
+                                            <option value="delhi">Delhi</option>
+                                            <option value="chennai">Chennai</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-gray-700 dark:text-gray-300">Salary in City A (₹)</label>
+                                        <input id="col_salary_a" type="number" min="0" value="1000000" class="w-full bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-right">
+                                    </div>
+                                </div>
+                                <div class="pt-3">
+                                    <button id="calc_col" class="bg-green-600 text-white py-2 px-4 rounded-lg">Compare Cost of Living</button>
+                                </div>
+                                <div id="col_result" class="mt-3 text-sm text-gray-700 dark:text-gray-200"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -882,8 +1031,8 @@
     </main>
 
     <section id="about-section" class="max-w-5xl mx-auto px-4 py-20">
-        <div class="mt-20">
-            <h2 class="text-4xl font-bold mb-4 bg-gradient-to-r from-teal-700 via-teal-600 to-blue-600 bg-clip-text text-transparent dark:from-teal-200 dark:via-cyan-200 dark:to-blue-200 text-center">About the CTC Calculator</h2>
+        <div class="mt-5">
+            <h2 class="text-4xl font-extrabold mb-4 bg-gradient-to-r from-teal-700 via-teal-600 to-blue-600 bg-clip-text text-transparent dark:from-teal-200 dark:via-cyan-200 dark:to-blue-200 text-center">About the CTC Calculator</h2>
             <div class="bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl border border-white/50 dark:border-gray-800 rounded-3xl p-10 shadow-[0_8px_25px_rgba(0,0,0,0.06)]">
                 <p class="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">This calculator helps you understand the breakdown of your Cost to Company (CTC) and estimate your in-hand salary. It accounts for common deductions like Employee Provident Fund (EPF), Professional Tax, and Income Tax under both the Old and New Tax Regimes.</p>
                 <p class="text-gray-700 dark:text-gray-300 leading-relaxed mt-3">Please note that this is an estimation tool. The final salary and tax calculations may vary based on your company's specific policies and your complete financial profile. It's always a good idea to consult with a financial advisor for exact figures.</p>
@@ -1959,5 +2108,109 @@
             });
         })();
     </script>
+
+    <script>
+        // Additional calculators logic (PF, HRA, Gratuity, LTA, Bonus, COL)
+        document.addEventListener('DOMContentLoaded', () => {
+            // PF
+            const pfBasic = document.getElementById('pf_basic');
+            const pfRateEmp = document.getElementById('pf_rate_emp');
+            const pfRateEr = document.getElementById('pf_rate_emp_er');
+            const pfBtn = document.getElementById('calc_pf');
+            const pfRes = document.getElementById('pf_result');
+            pfBtn.addEventListener('click', () => {
+                const basic = parseFloat(pfBasic.value) || 0;
+                const empRate = (parseFloat(pfRateEmp.value) || 0) / 100;
+                const erRate = (parseFloat(pfRateEr.value) || 0) / 100;
+                const empYear = basic * empRate;
+                const erYear = basic * erRate;
+                const empMonth = empYear / 12;
+                const erMonth = erYear / 12;
+                pfRes.innerHTML = `<div>Employee PF: <strong>${f_simple(empYear)}</strong> / month <strong>${f_simple(empMonth)}</strong></div>` +
+                    `<div>Employer PF: <strong>${f_simple(erYear)}</strong> / month <strong>${f_simple(erMonth)}</strong></div>`;
+            });
+
+            // HRA Exemption
+            const hraBasicMonthly = document.getElementById('hra_basic_monthly');
+            const hraReceivedMonthly = document.getElementById('hra_received_monthly');
+            const hraRentMonthly = document.getElementById('hra_rent_monthly');
+            const hraCityType = document.getElementById('hra_city_type');
+            const hraBtn = document.getElementById('calc_hra');
+            const hraRes = document.getElementById('hra_result');
+            hraBtn.addEventListener('click', () => {
+                const b = parseFloat(hraBasicMonthly.value) || 0;
+                const hraRecv = parseFloat(hraReceivedMonthly.value) || 0;
+                const rent = parseFloat(hraRentMonthly.value) || 0;
+                const city = hraCityType.value;
+                const actualHRA = hraRecv * 12;
+                const rentMinus10Pct = Math.max(0, (rent - 0.10 * b)) * 12;
+                const perc = city === 'metro' ? 0.50 : 0.40;
+                const pctOfBasic = b * perc * 12;
+                const exemption = Math.max(0, Math.min(actualHRA, rentMinus10Pct, pctOfBasic));
+                hraRes.innerHTML = `<div>Actual HRA received (annual): <strong>${f_simple(actualHRA)}</strong></div>` +
+                    `<div>Rent - 10% of Basic (annual): <strong>${f_simple(rentMinus10Pct)}</strong></div>` +
+                    `<div>${Math.round(perc * 100)}% of Basic (annual): <strong>${f_simple(pctOfBasic)}</strong></div>` +
+                    `<div class="mt-2 font-semibold">HRA Exemption (annual): <strong>${f_simple(exemption)}</strong></div>`;
+            });
+
+            // Gratuity
+            const gratBasicMonthly = document.getElementById('grat_basic_monthly');
+            const gratYears = document.getElementById('grat_years');
+            const gratBtn = document.getElementById('calc_gratuity');
+            const gratRes = document.getElementById('grat_result');
+            gratBtn.addEventListener('click', () => {
+                const basicMonthly = parseFloat(gratBasicMonthly.value) || 0;
+                const years = parseFloat(gratYears.value) || 0;
+                // Gratuity (Payment of Gratuity Act): (Basic+DA) * 15/26 * years
+                const gratuity = (basicMonthly) * (15 / 26) * years;
+                gratRes.innerHTML = `<div>Estimated Gratuity: <strong>${f_simple(gratuity)}</strong></div>`;
+            });
+
+            // LTA
+            const ltaReceived = document.getElementById('lta_received');
+            const ltaExpenses = document.getElementById('lta_expenses');
+            const ltaBtn = document.getElementById('calc_lta');
+            const ltaRes = document.getElementById('lta_result');
+            ltaBtn.addEventListener('click', () => {
+                const rec = parseFloat(ltaReceived.value) || 0;
+                const exp = parseFloat(ltaExpenses.value) || 0;
+                const exempt = Math.min(rec, exp);
+                ltaRes.innerHTML = `<div>LTA Received: <strong>${f_simple(rec)}</strong></div>` +
+                    `<div>Expenses Claimed: <strong>${f_simple(exp)}</strong></div>` +
+                    `<div class="mt-2 font-semibold">LTA Exempt: <strong>${f_simple(exempt)}</strong></div>`;
+            });
+
+            // Bonus
+            const bonusBase = document.getElementById('bonus_base');
+            const bonusPercent = document.getElementById('bonus_percent');
+            const bonusBtn = document.getElementById('calc_bonus');
+            const bonusRes = document.getElementById('bonus_result');
+            bonusBtn.addEventListener('click', () => {
+                const base = parseFloat(bonusBase.value) || 0;
+                const pct = (parseFloat(bonusPercent.value) || 0) / 100;
+                const bonus = base * pct;
+                bonusRes.innerHTML = `<div>Bonus Amount: <strong>${f_simple(bonus)}</strong></div>`;
+            });
+
+            // Cost of Living Comparison
+            const colMap = { mumbai: 1.00, bangalore: 0.95, delhi: 0.90, pune: 0.85, chennai: 0.82 };
+            const colCityA = document.getElementById('col_city_a');
+            const colCityB = document.getElementById('col_city_b');
+            const colSalaryA = document.getElementById('col_salary_a');
+            const colBtn = document.getElementById('calc_col');
+            const colRes = document.getElementById('col_result');
+            colBtn.addEventListener('click', () => {
+                const a = colCityA.value;
+                const b = colCityB.value;
+                const salaryA = parseFloat(colSalaryA.value) || 0;
+                const idxA = colMap[a] || 1;
+                const idxB = colMap[b] || 1;
+                // Required salary in B to match purchasing power in A: salaryB = salaryA * (idxB / idxA)
+                const salaryB = salaryA * (idxB / idxA);
+                colRes.innerHTML = `<div>If you earn <strong>${f_simple(salaryA)}</strong> in ${a.charAt(0).toUpperCase() + a.slice(1)}, you need approximately <strong>${f_simple(salaryB)}</strong> in ${b.charAt(0).toUpperCase() + b.slice(1)} to match cost-of-living.</div>`;
+            });
+        });
+    </script>
+
 </body>
 </html>
